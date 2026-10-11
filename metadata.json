@@ -1,0 +1,7 @@
+{
+  "name": "University of Lakki Marwat LMS",
+  "description": "Ultra-HD enterprise Windows 11 Fluent dark-mode Library Management System with barcode scanning, circulation desk, SQLite engine, C++20 architecture, and reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

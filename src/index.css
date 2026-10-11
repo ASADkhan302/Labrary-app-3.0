@@ -1,0 +1,1779 @@
+@import "tailwindcss";
+@import "@fontsource/noto-nastaliq-urdu/index.css";
+@import "@fontsource/noto-naskh-arabic/index.css";
+@import "@fontsource/playfair-display/latin-600.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    --font-cinzel: 'Cinzel', Georgia, serif;
+    --font-cinzel-decorative: 'Cinzel Decorative', 'Cinzel', Georgia, serif;
+    --font-display-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-urdu: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', serif;
+
+    /* ULM BRAND PALETTE TOKENS */
+    /* Surfaces */
+    --canvas: #141214;
+    --surface-1: #1A1A1A;
+    --surface-2: #221F26;
+    --surface-3: #2B2730;
+    --border-subtle: #2E2A33;
+    --border-field: #6F6879;
+
+    /* Text */
+    --text-strong: #FFFFFF;
+    --text-body: #E7E2EC;
+    --text-muted: #B3AABD;
+
+    /* Royal Purple */
+    --purple: #541A72;
+    --purple-hover: #6A2290;
+    --purple-pressed: #3F1256;
+    --purple-tint: #2A1338;
+    --purple-light: #A66BC9;
+
+    /* Old Gold */
+    --gold: #BC881B;
+    --gold-hover: #D4A02A;
+    --gold-pressed: #A87B16;
+    --gold-text: #E0B450;
+    --text-on-gold: #1A1A1A;
+
+    /* Slate Blue */
+    --blue: #29658E;
+    --blue-hover: #2F72A0;
+    --blue-pressed: #1F4E70;
+    --blue-text: #6FA8D2;
+    --text-on-blue: #FFFFFF;
+
+    /* Semantic */
+    --success: #34D399;
+    --danger: #FB7185;
+
+    /* Cream for Dropdowns, Menus & Pickers */
+    --cream-100: #FBF3DF;
+    --cream-200: #F2E6C4;
+    --cream-300: #E6D3A3;
+    --text-on-cream: #1A1A1A;
+    --on-cream: #1A1A1A;
+
+    /* Universal component semantic aliases */
+    --background: var(--canvas);
+    --card: var(--surface-1);
+    --card-foreground: var(--text-body);
+    --surface: var(--surface-1);
+    --surface-secondary: var(--surface-2);
+
+    --text-primary: var(--text-strong);
+    --text-secondary: var(--text-body);
+    --text-accent: var(--gold-text);
+    --text-on-accent: var(--text-on-gold);
+    --text-placeholder: var(--text-muted);
+
+    --border: var(--border-subtle);
+    --border-hover: var(--border-field);
+    --border-control: var(--border-field);
+
+    --accent: var(--gold);
+    --accent-hover: var(--gold-hover);
+    --accent-active: var(--gold-pressed);
+    --accent-tint: rgba(188, 136, 27, 0.15);
+    --accent-border: var(--gold-text);
+    --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--gold-text);
+
+    --control-bg: var(--surface-2);
+    --control-h-default: 40px;
+    --control-h-compact: 32px;
+
+    --radius-control: 8px;
+    --radius-card: 12px;
+    --radius-modal: 16px;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-modal: 0 20px 48px rgba(0, 0, 0, 0.6);
+    --modal-backdrop: rgba(20, 18, 20, 0.75);
+
+    /* Z-INDEX TOKENS */
+    --z-sticky: 10;
+    --z-toolbar: 20;
+    --z-dropdown: 1000;
+    --z-modal: 1100;
+    --z-toast: 1200;
+    --z-tooltip: 1300;
+
+    /* MOTION TOKENS: 150ms ease-out on color and border */
+    --duration-micro: 80ms;
+    --duration-default: 150ms;
+    --duration-panel: 200ms;
+    --duration-max: 300ms;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition: 150ms var(--ease-out);
+
+    /* Palette mapping */
+    --chart-1: #3B82F6;
+    --chart-2: #10B981;
+    --chart-3: #F59E0B;
+    --chart-4: #8B5CF6;
+    --chart-5: #F43F5E;
+  }
+
+  /* Semantic Design System Utility Classes */
+  .text-primary-token {
+    color: var(--text-primary) !important;
+  }
+  .text-secondary-token {
+    color: var(--text-secondary) !important;
+  }
+  .text-muted-token {
+    color: var(--text-muted) !important;
+  }
+  .text-accent-token {
+    color: var(--text-accent) !important;
+  }
+  .bg-page-token {
+    background-color: var(--background) !important;
+  }
+  .bg-card-token {
+    background-color: var(--card) !important;
+  }
+  .bg-surface-token {
+    background-color: var(--surface) !important;
+  }
+  .bg-surface-secondary-token {
+    background-color: var(--surface-secondary) !important;
+  }
+  .border-token {
+    border-color: var(--border) !important;
+  }
+  .border-control-token {
+    border-color: var(--border-control) !important;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--text-primary);
+    overflow: hidden;
+    transition: background-color var(--transition), color var(--transition);
+  }
+
+  /* Universal typography minimum: nothing below 12px */
+  * {
+    min-font-size: 12px;
+  }
+}
+
+/* ==========================================================================
+   1. TYPOGRAPHY
+   ========================================================================== */
+
+.font-cinzel {
+  font-family: var(--font-cinzel) !important;
+}
+
+.font-cinzel-decorative {
+  font-family: var(--font-cinzel-decorative) !important;
+}
+
+.font-sans,
+body,
+button,
+input,
+select,
+textarea,
+p,
+span,
+div {
+  font-family: var(--font-sans);
+}
+
+.font-mono,
+.font-mono-code,
+[data-mono] {
+  font-family: var(--font-mono) !important;
+}
+
+/* Page titles (20px) */
+.page-title,
+h1,
+h2:not(.card-title):not(.modal-title) {
+  font-family: var(--font-cinzel);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+
+/* Modal titles (20px) */
+.modal-title,
+[data-modal-title] {
+  font-family: var(--font-cinzel) !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Card titles (16px) */
+.card-title,
+h3:not(.page-title):not(.modal-title),
+h4:not(.page-title):not(.modal-title) {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+/* KPI numbers (28px) */
+.kpi-number,
+[data-kpi] {
+  font-family: var(--font-sans) !important;
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Labels and Captions (12px) */
+.caption-text,
+.text-caption,
+caption,
+small {
+  font-size: 12px !important;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Enforce no text below 12px across legacy Tailwind utility classes */
+.text-\[7px\],
+.text-\[8px\],
+.text-\[8\.5px\],
+.text-\[9px\],
+.text-\[9\.5px\],
+.text-\[10px\],
+.text-\[10\.5px\],
+.text-\[11px\],
+.text-\[11\.5px\] {
+  font-size: 12px !important;
+}
+
+/* ==========================================================================
+   2. SHARED FORM CONTROLS
+   ========================================================================== */
+
+label {
+  display: block;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  margin-bottom: 6px !important;
+  line-height: 1.4;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea) {
+  width: 100%;
+  height: 40px;
+  background-color: var(--control-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-control) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  transition: border-color 150ms var(--ease-out),
+              box-shadow 150ms var(--ease-out),
+              background-color 150ms var(--ease-out);
+  outline: none;
+}
+
+:where(textarea) {
+  height: auto !important;
+  min-height: 80px;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea):hover {
+  border-color: var(--border-hover) !important;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea):focus {
+  border-color: var(--accent) !important;
+  box-shadow: var(--focus-ring) !important;
+  outline: none !important;
+}
+
+:where(input, textarea)::placeholder {
+  color: var(--text-placeholder) !important;
+  opacity: 1 !important;
+  font-size: 14px;
+}
+
+.input-compact,
+.control-compact {
+  height: 32px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+}
+
+.form-field-error {
+  border-color: #EF4444 !important;
+}
+
+.form-error-msg {
+  font-size: 12px !important;
+  color: #EF4444;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   3. BUTTON ANIMATIONS & MOTION
+   - Hover: background lightens over 150ms, primary buttons lift 1px with slightly larger shadow
+   - Press: scale to 0.97 in 80ms, spring back on release.
+   - Focus: focus ring fades and grows in over 150ms.
+   - Icon buttons: gentle scale to 1.08 on hover.
+   ========================================================================== */
+
+button,
+[role="button"] {
+  font-family: var(--font-sans);
+  border-radius: 8px;
+  transition: transform 80ms var(--ease-out),
+              box-shadow 150ms var(--ease-out),
+              background-color 150ms var(--ease-out),
+              border-color 150ms var(--ease-out),
+              color 150ms var(--ease-out);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+button:active:not(:disabled),
+[role="button"]:active:not([aria-disabled="true"]) {
+  transform: scale(0.97) !important;
+  transition-duration: 80ms;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 1 !important;
+  color: var(--text-muted) !important;
+  background-color: var(--surface-2) !important;
+  border-color: var(--border-subtle) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+/* ==========================================================================
+   SHARED UNIFIED BUTTON SYSTEM
+   Variants: Primary (Gold), Secondary (Purple), Ghost (Slate Blue), Danger (Rose), Icon, Segmented
+   Sizes: sm (32px), md (36px), lg (40px) - minimum click area 32px
+   States: default, hover, focus-visible (2px gold ring), pressed, disabled (muted, never opacity), loading, selected
+   Isolation & Label: position relative, isolation isolate, label z-index 1, decor z-index -1
+   ========================================================================== */
+
+button,
+[role="button"],
+.btn {
+  position: relative !important;
+  isolation: isolate !important;
+  user-select: none;
+  touch-action: manipulation;
+  min-height: 32px;
+  min-width: fit-content;
+  white-space: nowrap;
+}
+
+/* Ensure all text labels and icons are strictly ABOVE decorative elements */
+button > *,
+[role="button"] > *,
+.btn > *,
+.btn-label {
+  position: relative;
+  z-index: 1;
+}
+
+/* Decorative ripples, pseudo elements, and shines are strictly BELOW labels */
+.btn-ripple-wave,
+.btn-deco,
+button::before,
+button::after {
+  z-index: -1 !important;
+  pointer-events: none !important;
+}
+
+/* Size Variants */
+.btn-sm,
+button.h-8 {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px;
+  font-size: 12px !important;
+  border-radius: 8px !important;
+}
+
+.btn-md,
+button.h-9 {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 14px;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+}
+
+.btn-lg,
+button.h-10,
+button.h-11 {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 16px;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+}
+
+/* 1. Primary Button: Gold #BC881B, text #1A1A1A (8.5:1 contrast) */
+.btn-primary,
+.btn-gold,
+button.bg-amber-500,
+button[type="submit"]:not(.btn-secondary):not(.btn-danger):not(.btn-ghost):not(.btn-dark):not(.btn-outline) {
+  background-color: var(--gold) !important;
+  color: var(--text-on-gold) !important;
+  font-weight: 700 !important;
+  font-size: 14px;
+  border: 1px solid rgba(212, 160, 42, 0.4) !important;
+  border-radius: 8px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: background-color 150ms ease-out, transform 80ms ease-out, box-shadow 150ms ease-out;
+}
+
+.btn-primary:hover:not(:disabled):not(:active),
+.btn-gold:hover:not(:disabled):not(:active),
+button.bg-amber-500:hover:not(:disabled):not(:active),
+button[type="submit"]:not(.btn-secondary):not(.btn-danger):not(.btn-ghost):not(.btn-dark):not(.btn-outline):hover:not(:disabled):not(:active) {
+  background-color: var(--gold-hover) !important;
+  color: var(--text-on-gold) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(188, 136, 27, 0.35) !important;
+}
+
+.btn-primary:active:not(:disabled),
+.btn-gold:active:not(:disabled),
+button.bg-amber-500:active:not(:disabled),
+button[type="submit"]:not(.btn-secondary):not(.btn-danger):not(.btn-ghost):not(.btn-dark):not(.btn-outline):active:not(:disabled) {
+  background-color: var(--gold-pressed) !important;
+  color: var(--text-on-gold) !important;
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled,
+.btn-gold:disabled,
+button.bg-amber-500:disabled,
+button[type="submit"]:not(.btn-secondary):not(.btn-danger):not(.btn-ghost):not(.btn-dark):not(.btn-outline):disabled {
+  background-color: #382C10 !important;
+  color: #8F7635 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 2. Secondary Button: Purple #541A72, text #FFFFFF (9.2:1 contrast) */
+.btn-secondary,
+.btn-purple,
+.btn-dark {
+  background-color: var(--purple) !important;
+  color: var(--text-strong) !important;
+  border: 1px solid rgba(166, 107, 201, 0.3) !important;
+  border-radius: 8px !important;
+  font-size: 14px;
+  font-weight: 600 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: background-color 150ms ease-out, transform 80ms ease-out, border-color 150ms ease-out;
+}
+
+.btn-secondary:hover:not(:disabled):not(:active),
+.btn-purple:hover:not(:disabled):not(:active),
+.btn-dark:hover:not(:disabled):not(:active) {
+  background-color: var(--purple-hover) !important;
+  color: var(--text-strong) !important;
+  border-color: rgba(166, 107, 201, 0.5) !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active:not(:disabled),
+.btn-purple:active:not(:disabled),
+.btn-dark:active:not(:disabled) {
+  background-color: var(--purple-pressed) !important;
+  color: var(--text-strong) !important;
+  transform: scale(0.98);
+}
+
+.btn-secondary:disabled,
+.btn-purple:disabled,
+.btn-dark:disabled {
+  background-color: #271433 !important;
+  color: #8B719B !important;
+  border-color: rgba(166, 107, 201, 0.15) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 3. Tertiary / Ghost Button: Slate Blue Text #6FA8D2 (5.8:1 contrast) */
+.btn-ghost,
+.btn-tertiary {
+  background-color: transparent !important;
+  color: var(--blue-text) !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  font-size: 14px;
+  font-weight: 500 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.btn-ghost:hover:not(:disabled):not(:active),
+.btn-tertiary:hover:not(:disabled):not(:active) {
+  background-color: var(--surface-3) !important;
+  color: var(--blue-hover) !important;
+}
+
+.btn-ghost:active:not(:disabled),
+.btn-tertiary:active:not(:disabled) {
+  background-color: var(--surface-2) !important;
+  color: var(--blue-pressed) !important;
+}
+
+.btn-ghost:disabled,
+.btn-tertiary:disabled {
+  background-color: transparent !important;
+  color: #4A5B6E !important;
+  border-color: transparent !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 4. Danger Button: Rose #FB7185 (6.1:1 contrast) */
+.btn-danger {
+  background-color: rgba(251, 113, 133, 0.12) !important;
+  color: var(--danger) !important;
+  border: 1px solid rgba(251, 113, 133, 0.35) !important;
+  border-radius: 8px !important;
+  font-size: 14px;
+  font-weight: 600 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+}
+
+.btn-danger:hover:not(:disabled):not(:active) {
+  background-color: rgba(251, 113, 133, 0.22) !important;
+  color: #FDA4AF !important;
+  transform: translateY(-1px);
+}
+
+.btn-danger:active:not(:disabled) {
+  background-color: rgba(251, 113, 133, 0.32) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-danger:disabled {
+  background-color: #241316 !important;
+  color: #7B3E48 !important;
+  border-color: rgba(251, 113, 133, 0.15) !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 5. Icon Buttons: minimum 32px click area */
+.btn-icon {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: transform 150ms ease-out, background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.btn-icon:hover:not(:disabled):not(:active) {
+  transform: scale(1.06);
+  background-color: var(--surface-3) !important;
+  color: var(--text-strong) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+.btn-icon:active:not(:disabled) {
+  transform: scale(0.96);
+  background-color: var(--surface-2) !important;
+}
+
+.btn-icon:disabled {
+  background-color: transparent !important;
+  color: #4A5B6E !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* 6. Segmented / Toggle Buttons */
+.btn-segmented,
+.btn-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 150ms ease-out;
+}
+
+.btn-segmented[aria-pressed="true"],
+.btn-toggle[aria-pressed="true"],
+.btn-segmented.btn-selected,
+.btn-toggle.btn-selected {
+  background-color: var(--gold) !important;
+  color: #1A1A1A !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.btn-segmented[aria-pressed="false"],
+.btn-toggle[aria-pressed="false"] {
+  background-color: transparent !important;
+  color: var(--text-muted) !important;
+}
+
+.btn-segmented[aria-pressed="false"]:hover,
+.btn-toggle[aria-pressed="false"]:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: var(--text-strong) !important;
+}
+
+/* Visible Keyboard Focus: 2px gold-text with 2px canvas offset */
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 4px var(--gold-text) !important;
+  transition: box-shadow 150ms ease-out;
+}
+
+/* Radial ripple wave effect: Gold at 15% alpha, strictly below label */
+.btn-ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: scale(0);
+  opacity: 0.15;
+  transition: transform 300ms ease-out, opacity 300ms ease-out;
+  background-color: var(--gold) !important;
+  z-index: -1 !important;
+}
+
+/* ==========================================================================
+   NATIVE SELECT, OPTION, OPTGROUP & BROWSER DEFAULTS
+   ========================================================================== */
+
+select,
+option,
+optgroup {
+  background-color: var(--surface-2) !important;
+  color: var(--text-strong) !important;
+  color-scheme: dark !important;
+}
+
+option:hover,
+option:focus {
+  background-color: var(--cream-200) !important;
+  color: var(--text-on-cream) !important;
+}
+
+option:checked {
+  background-color: var(--purple) !important;
+  color: var(--text-strong) !important;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+::selection {
+  background-color: var(--gold) !important;
+  color: var(--text-on-gold) !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-2) inset !important;
+  -webkit-text-fill-color: var(--text-strong) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(18deg);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   4. SHARED CARDS & PANELS
+   - Surface: surface-1 (#1A1A1A), 1px border-subtle (#2E2A33), radius 12, soft shadow, no glow
+   ========================================================================== */
+
+.card-fluent,
+[data-card],
+.bg-card-token,
+.card {
+  border-radius: 12px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background-color: var(--surface-1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35) !important;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out;
+}
+
+.card-fluent:hover,
+[data-card]:hover {
+  border-color: var(--border-field) !important;
+}
+
+/* ==========================================================================
+   5. SHARED MODALS
+   - Dark overlay with light blur, surface-1, 1px border, gold hairline on top
+   ========================================================================== */
+
+.modal-backdrop,
+.fixed.inset-0.z-50:has([class*="max-w-"]) {
+  background-color: rgba(20, 18, 20, 0.75) !important;
+  backdrop-filter: blur(4px) !important;
+  animation: modalBackdropFadeIn 150ms var(--ease-out) forwards;
+}
+
+.modal-dialog,
+.fixed.inset-0.z-50 > div[class*="max-w-"] {
+  border-radius: 12px !important;
+  border: 1px solid var(--border-subtle) !important;
+  background-color: var(--surface-1) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55) !important;
+  overflow: hidden;
+  position: relative;
+  animation: modalDialogScaleIn 150ms var(--ease-out) forwards;
+}
+
+/* Gold hairline on top of modals */
+.modal-dialog::before,
+.fixed.inset-0.z-50 > div[class*="max-w-"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.modal-dialog-exit {
+  animation: modalDialogScaleOut 120ms var(--ease-in) forwards;
+}
+
+@keyframes modalBackdropFadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(4px); }
+}
+
+@keyframes modalDialogScaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes modalDialogScaleOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.98); }
+}
+
+/* Drawers / slide-over panels: slide in from right with entrance easing (200ms) */
+.drawer-slide-in,
+[data-drawer] {
+  animation: drawerSlideIn 200ms var(--ease-out) forwards;
+}
+
+@keyframes drawerSlideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Delete confirmation: subtle 2-cycle horizontal shake (12px total, 300ms) */
+.animate-delete-shake {
+  animation: deleteConfirmShake 300ms var(--ease-out) forwards;
+}
+
+@keyframes deleteConfirmShake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+/* ==========================================================================
+   6. SHARED BADGES (Pill Badges for Status with >= 4.5:1 Contrast)
+   ========================================================================== */
+
+.badge-pill,
+[data-badge] {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
+  padding: 4px 10px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: 1px solid transparent !important;
+}
+
+.badge-available,
+.badge-success,
+[class*="bg-emerald-500/10"],
+[class*="bg-emerald-500/15"] {
+  background-color: rgba(52, 211, 153, 0.15) !important;
+  color: var(--success) !important;
+  border-color: rgba(52, 211, 153, 0.35) !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+}
+
+.badge-due-soon,
+.badge-warning,
+[class*="bg-amber-500/10"],
+[class*="bg-amber-500/15"] {
+  background-color: rgba(188, 136, 27, 0.15) !important;
+  color: var(--gold-text) !important;
+  border-color: rgba(188, 136, 27, 0.35) !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+}
+
+.badge-overdue,
+.badge-danger,
+[class*="bg-rose-500/10"],
+[class*="bg-rose-500/15"],
+[class*="bg-red-500/10"],
+[class*="bg-red-500/15"] {
+  background-color: rgba(251, 113, 133, 0.15) !important;
+  color: var(--danger) !important;
+  border-color: rgba(251, 113, 133, 0.35) !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+}
+
+.badge-accent,
+.badge-info,
+[class*="bg-blue-500/10"],
+[class*="bg-blue-500/15"] {
+  background-color: rgba(41, 101, 142, 0.15) !important;
+  color: var(--blue-text) !important;
+  border-color: rgba(41, 101, 142, 0.35) !important;
+  border-radius: 9999px !important;
+  font-size: 12px !important;
+}
+
+/* ==========================================================================
+   7. SHARED TABLES
+   - Sticky header on surface-2, muted uppercase small labels, hover surface-3,
+     selected row purple tint with gold left border, pill badges for status.
+   ========================================================================== */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th {
+  height: 40px;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding: 0 16px !important;
+  text-align: left;
+  background-color: var(--surface-2) !important;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+table tbody tr {
+  height: 48px !important;
+  transition: background-color 150ms ease-out;
+}
+
+table tbody tr:hover td {
+  background-color: var(--surface-3) !important;
+}
+
+table tbody tr.row-selected,
+table tbody tr[aria-selected="true"],
+table tbody tr[data-selected="true"] {
+  background-color: var(--purple-tint) !important;
+  border-left: 3px solid var(--gold) !important;
+}
+
+table td {
+  height: 48px !important;
+  font-size: 14px !important;
+  color: var(--text-body);
+  border-bottom: 1px solid var(--border-subtle) !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  padding: 0 16px !important;
+}
+
+/* Staggered entrance for the first 10 rows (20ms each) */
+table tbody tr:nth-child(1) { animation: rowFadeIn 200ms var(--ease-out) 0ms forwards; }
+table tbody tr:nth-child(2) { animation: rowFadeIn 200ms var(--ease-out) 20ms forwards; }
+table tbody tr:nth-child(3) { animation: rowFadeIn 200ms var(--ease-out) 40ms forwards; }
+table tbody tr:nth-child(4) { animation: rowFadeIn 200ms var(--ease-out) 60ms forwards; }
+table tbody tr:nth-child(5) { animation: rowFadeIn 200ms var(--ease-out) 80ms forwards; }
+table tbody tr:nth-child(6) { animation: rowFadeIn 200ms var(--ease-out) 100ms forwards; }
+table tbody tr:nth-child(7) { animation: rowFadeIn 200ms var(--ease-out) 120ms forwards; }
+table tbody tr:nth-child(8) { animation: rowFadeIn 200ms var(--ease-out) 140ms forwards; }
+table tbody tr:nth-child(9) { animation: rowFadeIn 200ms var(--ease-out) 160ms forwards; }
+table tbody tr:nth-child(10) { animation: rowFadeIn 200ms var(--ease-out) 180ms forwards; }
+
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Highlight new row with soft accent tint that fades over 1.5s */
+.row-new,
+tr.row-new {
+  animation: highlightRow 1.5s var(--ease-out) forwards;
+}
+
+@keyframes highlightRow {
+  0% { background-color: rgba(59, 130, 246, 0.25); }
+  100% { background-color: transparent; }
+}
+
+/* Row deleted: fade out and collapse height over 200ms */
+.row-deleted {
+  animation: collapseRow 200ms var(--ease-in) forwards;
+}
+
+@keyframes collapseRow {
+  0% { opacity: 1; height: 48px; }
+  100% { opacity: 0; height: 0; padding-top: 0; padding-bottom: 0; transform: scaleY(0); }
+}
+
+/* ==========================================================================
+   8. SHIMMER SKELETONS (1.4s loop, soft gradient sweep)
+   ========================================================================== */
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.06) 0%,
+    rgba(148, 163, 184, 0.16) 50%,
+    rgba(148, 163, 184, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSweep 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+@keyframes shimmerSweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   9. SCREEN SWITCH TRANSITIONS (Fade in + slide up 6px over 200ms)
+   ========================================================================== */
+
+.screen-view-enter {
+  animation: screenEnter 200ms var(--ease-out) forwards;
+}
+
+@keyframes screenEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.screen-view-exit {
+  animation: screenExit 120ms var(--ease-in) forwards;
+}
+
+@keyframes screenExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0.85;
+    transform: translateY(-2px);
+  }
+}
+
+/* Top 2px Progress Bar during transitions and operations */
+.top-route-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3B82F6, #60A5FA, #3B82F6);
+  background-size: 200% 100%;
+  z-index: 9999;
+  animation: topBarLoading 1s infinite linear;
+}
+
+@keyframes topBarLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   10. TOAST NOTIFICATION WITH COUNTDOWN BAR (Slide in from bottom right 200ms, pause on hover, slide out 150ms)
+   ========================================================================== */
+
+.toast-container {
+  animation: toastSlideIn 200ms var(--ease-out) forwards;
+}
+
+.toast-container.toast-exit {
+  animation: toastSlideOut 150ms var(--ease-in) forwards;
+}
+
+.toast-container:hover .toast-countdown-bar {
+  animation-play-state: paused !important;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) translateX(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.toast-countdown-bar {
+  animation: toastCountdown 3500ms linear forwards;
+}
+
+@keyframes toastCountdown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+/* Search input & clear icon spin */
+.search-clear-icon {
+  animation: clearIconSpin 150ms var(--ease-out) forwards;
+}
+
+@keyframes clearIconSpin {
+  from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* ==========================================================================
+   11. BARCODE SCANNER LASER SWEEP & SUCCESS FLASH (300ms)
+   ========================================================================== */
+
+.laser-sweep-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #EF4444;
+  box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.85);
+  animation: laserSweep 2s ease-in-out infinite alternate;
+}
+
+@keyframes laserSweep {
+  0% { top: 5%; }
+  100% { top: 95%; }
+}
+
+.viewfinder-flash-success,
+.scan-flash-success {
+  animation: flashSuccess 300ms var(--ease-out) forwards;
+}
+
+@keyframes flashSuccess {
+  0% {
+    border-color: #10B981 !important;
+    box-shadow: 0 0 28px rgba(16, 185, 129, 0.65) !important;
+    background-color: rgba(16, 185, 129, 0.18) !important;
+  }
+  100% {
+    border-color: rgba(148, 163, 184, 0.28) !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+  }
+}
+
+/* ==========================================================================
+   12. APP OPENING CEREMONY ENTRANCE ANIMATIONS
+   - Title bar slides down (300ms)
+   - Sidebar slides in from left (300ms)
+   - Cards stagger in 40ms apart
+   ========================================================================== */
+
+.animate-slide-down {
+  animation: titleBarSlideDown 300ms var(--ease-out) forwards;
+}
+
+@keyframes titleBarSlideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-right {
+  animation: sidebarSlideRight 300ms var(--ease-out) forwards;
+}
+
+@keyframes sidebarSlideRight {
+  from { opacity: 0; transform: translateX(-100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Cards staggered entrance (40ms each) */
+.card-stagger-1 { animation: cardFadeUp 250ms var(--ease-out) 0ms forwards; }
+.card-stagger-2 { animation: cardFadeUp 250ms var(--ease-out) 40ms forwards; }
+.card-stagger-3 { animation: cardFadeUp 250ms var(--ease-out) 80ms forwards; }
+.card-stagger-4 { animation: cardFadeUp 250ms var(--ease-out) 120ms forwards; }
+.book-card-enter { animation: cardFadeUp 200ms var(--ease-out) forwards; }
+
+@keyframes cardFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdowns & tooltips scale from 0.95 and fade in over 150ms from trigger edge */
+[data-radix-popper-content-wrapper] > div,
+[role="menu"],
+.dropdown-menu-content {
+  animation: dropdownSlide 150ms var(--ease-out) forwards !important;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin, top left);
+}
+
+@keyframes dropdownSlide {
+  from { opacity: 0; transform: translateY(-4px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ==========================================================================
+   13. PREFERS-REDUCED-MOTION (ACCESSIBILITY COMPLIANCE)
+   - Fall back instantly to 100ms simple fades everywhere
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 100ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 100ms !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   14. BARCODE HIGH-CONTRAST PRESERVATION
+   ========================================================================== */
+
+.barcode-container,
+[data-barcode-container],
+#printable-barcode-label {
+  background-color: #FFFFFF !important;
+  border-color: #CBD5E1 !important;
+}
+
+.barcode-bar,
+.barcode-container div,
+[data-barcode-container] div,
+#printable-barcode-label .barcode-bar {
+  background-color: #000000 !important;
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+/* ==========================================================================
+   15. SCROLLBARS (Windows 11 Fluent)
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+  transition: background-color var(--transition);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.bg-fluent-matrix {
+  background-color: var(--background);
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   16. RECHARTS, ICONS & SCROLLBARS TOKENS
+   ========================================================================== */
+
+/* Recharts elements strictly using theme tokens */
+.recharts-cartesian-axis-tick text,
+.recharts-text,
+.recharts-cartesian-axis-tick-value,
+.recharts-polar-angle-axis-tick text,
+.recharts-radial-bar-chart text {
+  fill: var(--text-muted) !important;
+  font-family: var(--font-mono, monospace);
+}
+
+.recharts-cartesian-grid line,
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: var(--border) !important;
+  opacity: 0.6;
+}
+
+.recharts-legend-item-text {
+  color: var(--text-secondary) !important;
+}
+
+.recharts-default-tooltip,
+.recharts-tooltip-wrapper {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.recharts-tooltip-item-name,
+.recharts-tooltip-item-value {
+  color: var(--text-primary) !important;
+}
+
+/* Icons & SVG currentColor */
+svg:not([fill="none"]):not([class*="fill-"]):not([data-preserve-fill="true"]) {
+  fill: currentColor;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-control);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ==========================================================================
+   17. PRINT STYLES (Crisp Black on White for Thermal Labels, Receipts & Reports)
+   ========================================================================== */
+
+@media print {
+  html, body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    color-scheme: light !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #printable-barcode-label,
+  #printable-barcode-label *,
+  [data-barcode-container="true"],
+  [data-barcode-container="true"] *,
+  [data-printable-report="true"],
+  [data-printable-report="true"] *,
+  .print-card-wrapper,
+  .print-card-wrapper *,
+  [data-member-card="true"],
+  [data-member-card="true"] *,
+  .member-card-scalable,
+  .member-card-scalable * {
+    visibility: visible !important;
+  }
+
+  [data-member-card="true"],
+  [data-member-card="true"] * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-card-wrapper {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 10mm auto !important;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+    break-after: page;
+  }
+
+  #printable-barcode-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 360px !important;
+    margin: 0 auto;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    box-shadow: none !important;
+  }
+
+  #printable-barcode-label p,
+  #printable-barcode-label span,
+  #printable-barcode-label div {
+    color: #000000 !important;
+  }
+
+  .barcode-bar,
+  #printable-barcode-label .barcode-bar,
+  [data-barcode-container="true"] .barcode-bar {
+    background-color: #000000 !important;
+    color: #000000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* All decorative animations strictly hidden on print */
+  .deco,
+  header::after,
+  .barcode-scan-wrapper::after {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   14. 2D ANIMATION PASS (DECORATIVE, VISUAL ONLY - ULM PALETTE)
+   - Inline SVG & CSS keyframes only
+   - Controlled via html.no-deco .deco { display: none }
+   - Transform and opacity only (plus single-draw stroke-dashoffset)
+   - Zero CPU thrash, 60fps hardware accelerated
+   ========================================================================== */
+
+/* Master disable switch */
+html.no-deco .deco,
+html.no-deco header::after,
+html.no-deco .barcode-scan-wrapper::after {
+  display: none !important;
+}
+
+/* 1. Header Gold Hairline Sweep (Item 6) */
+header {
+  position: relative !important;
+}
+
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 140px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-text), var(--gold), transparent);
+  box-shadow: 0 0 8px var(--gold);
+  animation: hairlineSweep 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 45;
+}
+
+@keyframes hairlineSweep {
+  0% {
+    transform: translateX(-160px);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.95;
+  }
+  85% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(calc(100vw + 160px));
+    opacity: 0;
+  }
+}
+
+/* 2. Barcode Scan Field Sweeping Beam (Item 4) */
+.barcode-scan-wrapper {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.barcode-scan-wrapper:focus-within::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, var(--gold-hover), var(--gold-text), var(--gold-hover), transparent);
+  box-shadow: 0 0 10px rgba(188, 136, 27, 0.7);
+  animation: goldScanSweep 2.4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes goldScanSweep {
+  0% {
+    left: 0%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  88% {
+    opacity: 0.9;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* 3. Start Screen Hero Keyframes (Item 1) */
+@keyframes purpleGlowPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+}
+
+@keyframes moteDrift {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.38;
+  }
+  80% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: translateY(-160px) translateX(6px);
+    opacity: 0;
+  }
+}
+
+@keyframes crestDraw {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes bookPageFlip {
+  0%, 100% {
+    transform: scaleX(1) skewY(0deg);
+    opacity: 0.9;
+  }
+  25% {
+    transform: scaleX(0.08) skewY(-6deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleX(-0.85) skewY(2deg);
+    opacity: 0.45;
+  }
+  75% {
+    transform: scaleX(0.08) skewY(-6deg);
+    opacity: 0.6;
+  }
+}
+
+/* 4. Boot Splash Book Spines Keyframes (Item 2) */
+@keyframes spineSlideUp {
+  from {
+    transform: translateY(28px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 5. Empty State Bobbing Keyframes (Item 3) */
+@keyframes bookStackBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* 6. Loading States Spine Scaling Keyframes (Item 5) */
+@keyframes bookSpineScale {
+  0%, 100% {
+    transform: scaleY(0.35);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scaleY(1.0);
+    opacity: 1.0;
+  }
+}
+
+/* 7. Success Toast Check Mark Keyframes (Item 7) */
+@keyframes checkDraw {
+  from {
+    stroke-dashoffset: 20;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes circulationCardFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes circulationBarWidthAnim {
+  0% {
+    opacity: 0.6;
+    max-width: 0%;
+  }
+  100% {
+    opacity: 1;
+    max-width: 100%;
+  }
+}
+
+.circulation-filter-card-mount {
+  animation: circulationCardFadeUp 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.circulation-bar-anim {
+  animation: circulationBarWidthAnim 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Prefers-reduced-motion safety net: show final static frame with zero movement */
+@media (prefers-reduced-motion: reduce) {
+  .deco,
+  header::after,
+  .barcode-scan-wrapper::after,
+  .circulation-filter-card-mount,
+  .circulation-bar-anim {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+  }
+}
+
+/* --- URDU LANGUAGE, TYPOGRAPHY & RTL SUPPORT --- */
+.font-urdu {
+  font-family: var(--font-urdu);
+  line-height: 2 !important;
+}
+
+[dir="auto"] {
+  unicode-bidi: plaintext;
+}
+
+/* Ensure all table rows maintain minimum height 48px */
+table tbody tr {
+  min-height: 48px;
+}
+
+/* Text inputs and editable controls with automatic direction */
+input[dir="auto"],
+textarea[dir="auto"] {
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+/* ==========================================================================
+   18. ULM CREST INSTITUTIONAL WATERMARK (BEHIND MAIN CONTENT SCREENS)
+   ========================================================================== */
+
+.watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(52vh, 520px);
+  height: min(52vh, 520px);
+  max-width: 520px;
+  max-height: 520px;
+  background-image: url('./assets/brand/ulm-crest.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.065;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2;
+  image-rendering: auto;
+}
+
+/* Switch off watermark completely when html.no-watermark is present */
+html.no-watermark .watermark {
+  display: none !important;
+}
+
+/* Ensure print preview and thermal labels NEVER show watermark */
+@media print {
+  .watermark {
+    display: none !important;
+  }
+  body {
+    background: transparent !important;
+  }
+  .member-card-scalable,
+  [data-member-card="true"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .print-card-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    margin: 10mm auto !important;
+  }
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+}
+
+
+
+
+

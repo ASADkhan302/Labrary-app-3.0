@@ -1,0 +1,283 @@
+/* University of Lakki Marwat (ULM) Central Campus LMS
+ * High-Contrast Dark Windows 11 Fluent QSS
+ * Canvas: #020617 | Cards: #0B1220 | Inputs: #0F172A | Borders: #64748B / #1E293B
+ * Primary: Amber #F59E0B (Dark text #020617) | Accent: Blue #2563EB / #60A5FA
+ */
+
+* {
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    font-size: 13px;
+    color: #F1F5F9;
+}
+
+QMainWindow, QDialog {
+    background-color: #020617;
+}
+
+QWidget#CentralWidget {
+    background-color: #020617;
+}
+
+/* Header Strip */
+QWidget#HeaderStrip {
+    background-color: #0B1220;
+    border-bottom: 1px solid #1E293B;
+}
+
+QLabel#HeaderTitle {
+    font-family: "Cinzel", "Cinzel Decorative", Georgia, serif;
+    font-size: 15px;
+    font-weight: bold;
+    color: #F1F5F9;
+    letter-spacing: 1px;
+}
+
+QLabel#HeaderSubtitle {
+    color: #A8B5C8;
+    font-size: 11px;
+    font-family: "JetBrains Mono", monospace;
+}
+
+QLabel#WorkstationBadge {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Left Navigation Rail */
+QWidget#NavRail {
+    background-color: #0B1220;
+    border-right: 1px solid #1E293B;
+}
+
+QPushButton.NavButton {
+    background-color: transparent;
+    color: #A8B5C8;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+QPushButton.NavButton:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #F1F5F9;
+}
+
+QPushButton.NavButton:checked, QPushButton.NavButton[active="true"] {
+    background-color: rgba(37, 99, 235, 0.18);
+    color: #60A5FA;
+    border-left: 3px solid #2563EB;
+}
+
+/* Panels and Cards */
+QFrame.CardFrame {
+    background-color: #0B1220;
+    border: 1px solid #1E293B;
+    border-radius: 10px;
+}
+
+/* Inputs, Edits, Comboboxes */
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox, QDateEdit {
+    background-color: #0F172A;
+    border: 1px solid #64748B;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #F1F5F9;
+    selection-background-color: #F59E0B;
+    selection-color: #020617;
+}
+
+QLineEdit:hover, QTextEdit:hover, QSpinBox:hover, QComboBox:hover {
+    border: 1px solid #94A3B8;
+}
+
+QLineEdit:focus, QTextEdit:focus, QSpinBox:focus, QComboBox:focus, QDateEdit:focus {
+    border: 2px solid #F59E0B;
+    background-color: #0B1220;
+}
+
+/* Monospace inputs for codes */
+.CodeInput {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+}
+
+/* PushButtons */
+QPushButton {
+    background-color: #0F172A;
+    border: 1px solid #64748B;
+    border-radius: 6px;
+    padding: 7px 16px;
+    color: #F1F5F9;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: #1E293B;
+    border-color: #94A3B8;
+}
+
+QPushButton:pressed {
+    background-color: #020617;
+}
+
+QPushButton:focus {
+    border: 2px solid #F59E0B;
+}
+
+/* Primary Action Button (Amber) */
+QPushButton#PrimaryButton, QPushButton.PrimaryAction {
+    background-color: #F59E0B;
+    color: #020617;
+    border: 1px solid #D97706;
+    font-weight: bold;
+}
+
+QPushButton#PrimaryButton:hover, QPushButton.PrimaryAction:hover {
+    background-color: #D97706;
+}
+
+QPushButton#PrimaryButton:pressed, QPushButton.PrimaryAction:pressed {
+    background-color: #B45309;
+}
+
+/* Accent Button (Blue) */
+QPushButton#AccentButton, QPushButton.AccentAction {
+    background-color: #2563EB;
+    color: #FFFFFF;
+    border: 1px solid #1D4ED8;
+}
+
+QPushButton#AccentButton:hover, QPushButton.AccentAction:hover {
+    background-color: #1D4ED8;
+}
+
+/* Danger Button (Rose) */
+QPushButton#DangerButton, QPushButton.DangerAction {
+    background-color: #2A1215;
+    color: #FB7185;
+    border: 1px solid rgba(251, 113, 133, 0.4);
+}
+
+QPushButton#DangerButton:hover, QPushButton.DangerAction:hover {
+    background-color: #3B1319;
+    border-color: #FB7185;
+}
+
+/* Filter Chips */
+QPushButton.FilterChip {
+    background-color: #0F172A;
+    color: #A8B5C8;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 4px 12px;
+    font-size: 12px;
+}
+
+QPushButton.FilterChip:hover {
+    border-color: #64748B;
+    color: #F1F5F9;
+}
+
+QPushButton.FilterChip:checked {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+    border: 1px solid #F59E0B;
+    font-weight: bold;
+}
+
+/* Table View */
+QTableView {
+    background-color: #0B1220;
+    border: 1px solid #1E293B;
+    border-radius: 8px;
+    gridline-color: #1E293B;
+    color: #F1F5F9;
+    selection-background-color: rgba(37, 99, 235, 0.25);
+    selection-color: #F1F5F9;
+}
+
+QTableView::item {
+    padding: 6px 10px;
+    border-bottom: 1px solid #1E293B;
+}
+
+QTableView::item:selected {
+    background-color: rgba(37, 99, 235, 0.28);
+    color: #FFFFFF;
+}
+
+QTableView::item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+QHeaderView::section {
+    background-color: #0F172A;
+    color: #A8B5C8;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
+    border: none;
+    border-right: 1px solid #1E293B;
+    border-bottom: 1px solid #334155;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #020617;
+    width: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #334155;
+    min-height: 24px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #64748B;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background: #020617;
+    height: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #334155;
+    min-width: 24px;
+    border-radius: 4px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #64748B;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+/* Tooltips */
+QToolTip {
+    background-color: #0F172A;
+    color: #F1F5F9;
+    border: 1px solid #64748B;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
