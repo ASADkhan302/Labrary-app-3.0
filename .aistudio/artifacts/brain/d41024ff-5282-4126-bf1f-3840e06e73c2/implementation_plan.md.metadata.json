@@ -1,0 +1,6 @@
+{
+  "summary": "Implementation plan to create the complete core system technical specification and LLM architecture prompt in `docs/ULM_LMS_CORE_SYSTEM.md`, covering backend storage engines, SQLite/IndexedDB schemas, IPC protocols, accession sequence engines, barcode hardware wedge listeners, circulation logic, and Excel streaming pipelines without UI code.",
+  "updatedAt": "2026-10-15T09:24:57.754332821Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

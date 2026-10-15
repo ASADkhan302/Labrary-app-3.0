@@ -93,18 +93,16 @@ export const PrimaryHeader: React.FC<PrimaryHeaderProps> = ({
             </>
           )}
 
-          {/* Insignia Crest Badge (Round dark badge #141214 with 1px gold border) */}
-          <div 
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#141214] border border-[#BC881B]/40 flex items-center justify-center shrink-0 overflow-hidden shadow-md p-1 hover:border-[#BC881B] transition-colors"
-            title="University of Lakki Marwat Official Crest"
-          >
+          {/* Insignia Crest Badge (Crisp at native proportions, width 48px, refined gold institutional styling) */}
+          <div className="relative shrink-0 flex items-center justify-center p-0.5 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_12px_rgba(188,136,27,0.25)]">
             <img 
               src={ULM_CREST_SRC} 
               alt="University of Lakki Marwat crest" 
-              width={40} 
-              height={40} 
-              className="w-full h-full object-contain"
-              style={{ imageRendering: 'auto' }}
+              width={48} 
+              height={48} 
+              className="w-12 h-12 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] select-none"
+              style={{ imageRendering: '-webkit-optimize-contrast' }}
+              title="University of Lakki Marwat Official Crest"
             />
           </div>
 

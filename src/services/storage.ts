@@ -216,25 +216,36 @@ export class LibraryStorage {
 
   static saveBooks(books: Book[]): void {
     this.booksCache = books;
-    this.booksRawString = JSON.stringify(books);
-    localStorage.setItem(STORAGE_KEYS.BOOKS, this.booksRawString);
+    try {
+      this.booksRawString = JSON.stringify(books);
+      localStorage.setItem(STORAGE_KEYS.BOOKS, this.booksRawString);
+    } catch (quotaErr) {
+      // Browser/WebView2 5MB quota reached; master records preserved in memory & SQLite
+      console.warn('localStorage quota threshold reached, preserving in SQLite:', quotaErr);
+    }
     this.notifyMutation();
   }
 
   static prependBook(newBook: Book, books: Book[]): void {
     books.unshift(newBook);
     this.booksCache = books;
-    if (this.booksRawString && this.booksRawString.startsWith('[')) {
-      const newBookJson = JSON.stringify(newBook);
-      const inner = this.booksRawString.trim();
-      if (inner === '[]') {
-        this.booksRawString = `[${newBookJson}]`;
+    try {
+      if (this.booksRawString && this.booksRawString.startsWith('[')) {
+        const newBookJson = JSON.stringify(newBook);
+        const inner = this.booksRawString.trim();
+        if (inner === '[]') {
+          this.booksRawString = `[${newBookJson}]`;
+        } else {
+          this.booksRawString = `[${newBookJson},${inner.slice(1)}`;
+        }
+        localStorage.setItem(STORAGE_KEYS.BOOKS, this.booksRawString);
       } else {
-        this.booksRawString = `[${newBookJson},${inner.slice(1)}`;
+        this.saveBooks(books);
+        return;
       }
-      localStorage.setItem(STORAGE_KEYS.BOOKS, this.booksRawString);
-    } else {
+    } catch {
       this.saveBooks(books);
+      return;
     }
     this.notifyMutation();
   }
@@ -475,9 +486,16 @@ export class LibraryStorage {
    */
   static addBooksBatchAtomic(newBooks: Book[]): { success: boolean; count: number } {
     if (!newBooks || newBooks.length === 0) return { success: true, count: 0 };
-    const currentBooks = this.getBooks();
+    const currentBooks = this.booksCache || this.getBooks();
     const combined = [...newBooks, ...currentBooks];
-    this.saveBooks(combined);
+    this.booksCache = combined;
+    try {
+      this.booksRawString = JSON.stringify(combined);
+      localStorage.setItem(STORAGE_KEYS.BOOKS, this.booksRawString);
+    } catch {
+      // If full array exceeds localStorage quota, SQLite binary is updated on commit
+      console.warn('Batch atomic stored in memory cache; localStorage quota exceeded.');
+    }
     this.notifyMutation();
     return { success: true, count: newBooks.length };
   }

@@ -227,9 +227,22 @@ export class SqliteDatabaseService {
         reason TEXT
       );
 
+      CREATE TABLE IF NOT EXISTS book_images (
+        id TEXT PRIMARY KEY,
+        book_id TEXT NOT NULL,
+        thumbnail_data TEXT,
+        full_data TEXT,
+        mime_type TEXT DEFAULT 'image/jpeg'
+      );
+
       CREATE INDEX IF NOT EXISTS idx_books_barcode ON books(barcode);
       CREATE INDEX IF NOT EXISTS idx_books_accession ON books(accession_no);
+      CREATE INDEX IF NOT EXISTS idx_books_isbn ON books(isbn);
+      CREATE INDEX IF NOT EXISTS idx_books_title ON books(book_name);
+      CREATE INDEX IF NOT EXISTS idx_books_author ON books(author);
+      CREATE INDEX IF NOT EXISTS idx_books_date_added ON books(date_added);
       CREATE INDEX IF NOT EXISTS idx_books_almari_shelf ON books(almari_id, shelf_no, title_sort);
+      CREATE INDEX IF NOT EXISTS idx_book_images_book_id ON book_images(book_id);
       CREATE INDEX IF NOT EXISTS idx_borrowers_uid ON borrowers(university_id);
       CREATE INDEX IF NOT EXISTS idx_transactions_book_id ON transactions(book_id);
       CREATE INDEX IF NOT EXISTS idx_transactions_borrower_id ON transactions(borrower_id);
@@ -257,6 +270,13 @@ export class SqliteDatabaseService {
     if (jModeRes.length > 0 && jModeRes[0].values.length > 0) {
       this.currentJournalMode = String(jModeRes[0].values[0][0]).toUpperCase();
     }
+  }
+
+  /**
+   * Alias for loadFromBytes
+   */
+  async loadFromBinary(bytes: Uint8Array): Promise<void> {
+    return this.loadFromBytes(bytes);
   }
 
   /**
@@ -546,6 +566,314 @@ export class SqliteDatabaseService {
     } catch {}
 
     return { books, borrowers, transactions, history, settings };
+  }
+
+  /**
+   * High performance streaming batch insertion inside a single atomic SQLite transaction
+   */
+  insertBooksBatch(books: Book[]): { success: boolean; insertedCount: number } {
+    if (!this.db || books.length === 0) return { success: true, insertedCount: 0 };
+
+    this.db.run('BEGIN TRANSACTION;');
+    try {
+      const stmt = this.db.prepare(`
+        INSERT OR REPLACE INTO books (
+          id, barcode, accession_no, isbn, book_name, author, publisher, category,
+          edition, publication_year, language, description, book_image_path, shelf,
+          row, section, dewey_call_number, total_quantity, available_quantity,
+          created_at, updated_at, is_active, title_sort, author_sort, search_text,
+          place, binding, pages, price, source_remarks, import_batch_id, imported_at, date_added,
+          group_id, almari_id, shelf_no
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      `);
+
+      for (const b of books) {
+        stmt.run([
+          b.id, b.barcode, b.accession_no || null, b.isbn || null, b.book_name, b.author,
+          b.publisher || null, b.category, b.edition || null, b.publication_year,
+          b.language || null, b.description || null, b.book_image_path || null,
+          b.shelf || null, b.row || null, b.section || null, b.dewey_call_number || null,
+          b.total_quantity, b.available_quantity, b.created_at, b.updated_at,
+          b.is_active ? 1 : 0, b.title_sort || null, b.author_sort || null, b.search_text || null,
+          b.place || null, b.binding || null, b.pages || null, b.price || null,
+          b.source_remarks || null, b.import_batch_id || null, b.imported_at || null, b.date_added || null,
+          b.group_id || null, b.almari_id || null, b.shelf_no || null
+        ]);
+      }
+      stmt.free();
+      this.db.run('COMMIT;');
+      return { success: true, insertedCount: books.length };
+    } catch (err) {
+      try { this.db.run('ROLLBACK;'); } catch {}
+      throw err;
+    }
+  }
+
+  /**
+   * Alias for insertBooksBatch: atomic streaming batch insertion inside a transaction
+   */
+  insertBooksBatchTransaction(books: Book[]): { success: boolean; insertedCount: number } {
+    return this.insertBooksBatch(books);
+  }
+
+  /**
+   * Fast paginated query with SQL LIMIT and OFFSET
+   */
+  getBooksPaged(params: {
+    offset: number;
+    limit: number;
+    search?: string;
+    category?: string;
+    language?: string;
+    sortField?: string;
+    sortOrder?: 'ASC' | 'DESC';
+  }): { books: Book[]; totalCount: number } {
+    if (!this.db) return { books: [], totalCount: 0 };
+
+    const conditions: string[] = ['is_active = 1'];
+    const sqlParams: any[] = [];
+
+    if (params.search && params.search.trim()) {
+      const q = `%${params.search.trim()}%`;
+      conditions.push('(book_name LIKE ? OR author LIKE ? OR barcode LIKE ? OR accession_no LIKE ? OR isbn LIKE ?)');
+      sqlParams.push(q, q, q, q, q);
+    }
+
+    if (params.category && params.category !== 'all') {
+      conditions.push('category = ?');
+      sqlParams.push(params.category);
+    }
+
+    if (params.language && params.language !== 'all') {
+      conditions.push('language = ?');
+      sqlParams.push(params.language);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    // Count query
+    let totalCount = 0;
+    const countSql = `SELECT COUNT(*) AS total FROM books ${whereClause};`;
+    const countRes = this.db.exec(countSql, sqlParams);
+    if (countRes.length > 0 && countRes[0].values.length > 0) {
+      totalCount = Number(countRes[0].values[0][0]);
+    }
+
+    // Sort order
+    const fieldMap: Record<string, string> = {
+      title: 'title_sort',
+      author: 'author_sort',
+      accession: 'accession_no',
+      date: 'date_added',
+      created: 'created_at',
+    };
+    const sortCol = fieldMap[params.sortField || 'created'] || 'created_at';
+    const order = params.sortOrder === 'ASC' ? 'ASC' : 'DESC';
+
+    // Page query
+    const pageSql = `SELECT * FROM books ${whereClause} ORDER BY ${sortCol} ${order} LIMIT ? OFFSET ?;`;
+    const pageRes = this.db.exec(pageSql, [...sqlParams, params.limit, params.offset]);
+
+    const books: Book[] = [];
+    if (pageRes.length > 0) {
+      const cols = pageRes[0].columns;
+      for (const row of pageRes[0].values) {
+        const obj: any = {};
+        cols.forEach((col, idx) => {
+          obj[col] = row[idx];
+        });
+        obj.is_active = Boolean(obj.is_active);
+        books.push(obj as Book);
+      }
+    }
+
+    return { books, totalCount };
+  }
+
+  /**
+   * Fast indexed retrieval by accession number (text column preserving leading zeros)
+   */
+  getBookByAccession(accessionNo: string): Book | null {
+    if (!this.db) return null;
+    try {
+      const res = this.db.exec('SELECT * FROM books WHERE accession_no = ? LIMIT 1;', [accessionNo]);
+      if (res.length > 0 && res[0].values.length > 0) {
+        const cols = res[0].columns;
+        const row = res[0].values[0];
+        const obj: any = {};
+        cols.forEach((col, idx) => {
+          obj[col] = row[idx];
+        });
+        obj.is_active = Boolean(obj.is_active);
+        return obj as Book;
+      }
+    } catch {}
+    return null;
+  }
+
+  /**
+   * Fast indexed retrieval by barcode
+   */
+  getBookByBarcode(barcode: string): Book | null {
+    if (!this.db) return null;
+    try {
+      const res = this.db.exec('SELECT * FROM books WHERE barcode = ? LIMIT 1;', [barcode]);
+      if (res.length > 0 && res[0].values.length > 0) {
+        const cols = res[0].columns;
+        const row = res[0].values[0];
+        const obj: any = {};
+        cols.forEach((col, idx) => {
+          obj[col] = row[idx];
+        });
+        obj.is_active = Boolean(obj.is_active);
+        return obj as Book;
+      }
+    } catch {}
+    return null;
+  }
+
+  /**
+   * Instant aggregate catalog counts without loading book objects
+   */
+  getQuickCatalogStats(): { totalBooks: number; totalTitles: number; totalBorrowers: number; activeLoans: number } {
+    if (!this.db) return { totalBooks: 0, totalTitles: 0, totalBorrowers: 0, activeLoans: 0 };
+
+    let totalTitles = 0;
+    let totalBooks = 0;
+    let totalBorrowers = 0;
+    let activeLoans = 0;
+
+    try {
+      const resBooks = this.db.exec('SELECT COUNT(*) AS titles, COALESCE(SUM(total_quantity), 0) AS total_copies FROM books WHERE is_active = 1;');
+      if (resBooks.length > 0 && resBooks[0].values.length > 0) {
+        totalTitles = Number(resBooks[0].values[0][0]) || 0;
+        totalBooks = Number(resBooks[0].values[0][1]) || 0;
+      }
+
+      const resBor = this.db.exec('SELECT COUNT(*) FROM borrowers WHERE is_active = 1;');
+      if (resBor.length > 0 && resBor[0].values.length > 0) {
+        totalBorrowers = Number(resBor[0].values[0][0]) || 0;
+      }
+
+      const resTx = this.db.exec("SELECT COUNT(*) FROM transactions WHERE status = 'active';");
+      if (resTx.length > 0 && resTx[0].values.length > 0) {
+        activeLoans = Number(resTx[0].values[0][0]) || 0;
+      }
+    } catch (e) {
+      console.warn('Quick stats error:', e);
+    }
+
+    return { totalBooks, totalTitles, totalBorrowers, activeLoans };
+  }
+
+  /**
+   * Save book cover image outside main books table
+   */
+  saveBookCoverImage(bookId: string, fullData: string, thumbnailData?: string): boolean {
+    if (!this.db) return false;
+    try {
+      const imgId = `img_${bookId}`;
+      this.db.run(
+        'INSERT OR REPLACE INTO book_images (id, book_id, thumbnail_data, full_data, mime_type) VALUES (?, ?, ?, ?, ?);',
+        [imgId, bookId, thumbnailData || fullData, fullData, 'image/jpeg']
+      );
+      this.db.run('UPDATE books SET book_image_path = ? WHERE id = ?;', [imgId, bookId]);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Retrieve book cover image on-demand
+   */
+  getBookCoverImage(bookId: string): string | null {
+    if (!this.db) return null;
+    try {
+      const res = this.db.exec('SELECT full_data FROM book_images WHERE book_id = ? LIMIT 1;', [bookId]);
+      if (res.length > 0 && res[0].values.length > 0) {
+        return String(res[0].values[0][0]);
+      }
+    } catch {}
+    return null;
+  }
+  /**
+   * Fast indexed single book insert / replace without recreating or rewriting full database
+   */
+  insertBookSingle(b: Book): boolean {
+    if (!this.db) return false;
+    try {
+      this.db.run(`
+        INSERT OR REPLACE INTO books (
+          id, barcode, accession_no, isbn, book_name, author, publisher, category,
+          edition, publication_year, language, description, book_image_path, shelf,
+          row, section, dewey_call_number, total_quantity, available_quantity,
+          created_at, updated_at, is_active, title_sort, author_sort, search_text,
+          place, binding, pages, price, source_remarks, import_batch_id, imported_at, date_added,
+          group_id, almari_id, shelf_no
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      `, [
+        b.id, b.barcode, b.accession_no || null, b.isbn || null, b.book_name, b.author,
+        b.publisher || null, b.category, b.edition || null, b.publication_year,
+        b.language || null, b.description || null, b.book_image_path || null,
+        b.shelf || null, b.row || null, b.section || null, b.dewey_call_number || null,
+        b.total_quantity, b.available_quantity, b.created_at, b.updated_at,
+        b.is_active ? 1 : 0, b.title_sort || null, b.author_sort || null, b.search_text || null,
+        b.place || null, b.binding || null, b.pages || null, b.price || null,
+        b.source_remarks || null, b.import_batch_id || null, b.imported_at || null, b.date_added || null,
+        b.group_id || null, b.almari_id || null, b.shelf_no || null
+      ]);
+      return true;
+    } catch (e) {
+      console.error('Failed to insert single book into SQLite:', e);
+      return false;
+    }
+  }
+
+  /**
+   * Fast indexed single book update in-place
+   */
+  updateBookSingle(id: string, updates: Partial<Book>): boolean {
+    if (!this.db) return false;
+    try {
+      const setClauses: string[] = [];
+      const values: any[] = [];
+      const entries = Object.entries(updates);
+      for (const [key, val] of entries) {
+        if (key === 'id') continue;
+        setClauses.push(`${key} = ?`);
+        if (key === 'is_active') {
+          values.push(val ? 1 : 0);
+        } else {
+          values.push(val !== undefined ? val : null);
+        }
+      }
+      if (setClauses.length === 0) return true;
+      values.push(id);
+      this.db.run(`UPDATE books SET ${setClauses.join(', ')} WHERE id = ?;`, values);
+      return true;
+    } catch (e) {
+      console.error('Failed to update single book in SQLite:', e);
+      return false;
+    }
+  }
+
+  /**
+   * Fast indexed single book deletion (soft or permanent)
+   */
+  deleteBookSingle(id: string, permanent: boolean = false): boolean {
+    if (!this.db) return false;
+    try {
+      if (permanent) {
+        this.db.run('DELETE FROM books WHERE id = ?;', [id]);
+      } else {
+        this.db.run("UPDATE books SET is_active = 0, updated_at = datetime('now') WHERE id = ?;", [id]);
+      }
+      return true;
+    } catch (e) {
+      console.error('Failed to delete book in SQLite:', e);
+      return false;
+    }
   }
 
   /**

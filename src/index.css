@@ -1310,7 +1310,7 @@ tr.row-new {
 }
 
 .bg-fluent-matrix {
-  background-color: var(--background);
+  background-color: transparent;
   color: var(--text-primary);
 }
 
@@ -1726,19 +1726,19 @@ textarea[dir="auto"] {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(52vh, 520px);
-  height: min(52vh, 520px);
-  max-width: 520px;
-  max-height: 520px;
-  background-image: url('./assets/brand/ulm-crest.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  opacity: 0.065;
+  width: min(65vh, 640px, 85vw);
+  height: min(65vh, 640px, 85vw);
+  max-width: 640px;
+  max-height: 640px;
+  /* Confirmed 12%–15% institutional watermark visibility (0.14 opacity) behind main content */
+  opacity: 0.14;
   pointer-events: none;
   user-select: none;
-  z-index: 2;
-  image-rendering: auto;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 /* Switch off watermark completely when html.no-watermark is present */
@@ -1748,30 +1748,46 @@ html.no-watermark .watermark {
 
 /* Ensure print preview and thermal labels NEVER show watermark */
 @media print {
+  @page {
+    size: 85.6mm 54mm;
+    margin: 0;
+  }
   .watermark {
     display: none !important;
   }
   body {
     background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .member-card-scalable,
   [data-member-card="true"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    width: 85.6mm !important;
+    height: 54mm !important;
+    max-width: 85.6mm !important;
+    max-height: 54mm !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
   }
   .print-card-wrapper {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
+    width: 85.6mm !important;
+    height: 54mm !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    margin: 10mm auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .page-break-after {
     page-break-after: always !important;
     break-after: page !important;
   }
 }
+
 
 
 

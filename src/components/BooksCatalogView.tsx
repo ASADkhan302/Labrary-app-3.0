@@ -668,7 +668,7 @@ export const BooksCatalogView: React.FC<BooksCatalogViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenBatchLabelPrint}
-                className="btn-secondary h-10 px-3.5 rounded-[10px] font-semibold text-[13px] inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                className="btn-secondary h-10 px-3.5 rounded-[10px] font-semibold text-[13px] inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs bg-[#BC881B]/15 hover:bg-[#BC881B]/25 text-[#E0B450] hover:text-white border border-[#BC881B]/40 hover:border-[#BC881B]/70 shadow-[0_2px_8px_rgba(188,136,27,0.12)] active:scale-[0.98]"
                 title="Print batch thermal barcode labels for cataloged volumes"
               >
                 <Printer className="w-4 h-4 text-[#E0B450] shrink-0" />
@@ -681,7 +681,7 @@ export const BooksCatalogView: React.FC<BooksCatalogViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenImportBookEntrySheet}
-                className="btn-secondary h-10 px-3.5 rounded-[10px] font-semibold text-[13px] inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                className="btn-secondary h-10 px-3.5 rounded-[10px] font-semibold text-[13px] inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-white border border-emerald-500/40 hover:border-emerald-500/70 shadow-[0_2px_8px_rgba(16,185,129,0.12)] active:scale-[0.98]"
                 title="Import catalog from ULM_Book_Entry_Sheet.xlsx"
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -1070,13 +1070,14 @@ export const BooksCatalogView: React.FC<BooksCatalogViewProps> = ({
             })}
           </div>
         ) : (
-          /* List View: High Density Table with refined row padding */
-          <div className="bg-[#0F172A] border border-slate-200 dark:border-[#1E293B] rounded-xl overflow-hidden shadow-2xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
-                <thead className="bg-slate-50 dark:bg-[#020617] text-slate-600 dark:text-slate-400 uppercase font-mono-code text-[11px] border-b border-slate-200 dark:border-[#1E293B]">
-                  <tr>
-                    <th className="py-3 px-3 text-center w-10">
+          /* List View: Wide table on desktop, automatically switches to compact cards on narrow / restored screens (< 1024px) */
+          <>
+            <div className="hidden lg:block bg-[#0F172A] border border-slate-200 dark:border-[#1E293B] rounded-xl overflow-hidden shadow-2xs">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                  <thead className="bg-slate-50 dark:bg-[#020617] text-slate-600 dark:text-slate-400 uppercase font-mono-code text-[11px] border-b border-slate-200 dark:border-[#1E293B]">
+                    <tr>
+                      <th className="py-3 px-3 text-center w-10">
                       <input
                         type="checkbox"
                         checked={filteredBooks.length > 0 && selectedBookIds.size === filteredBooks.length}
@@ -1254,6 +1255,132 @@ export const BooksCatalogView: React.FC<BooksCatalogViewProps> = ({
               </table>
             </div>
           </div>
+
+          {/* List View on Narrow / Restored Screens (< 1024px): Responsive Compact Card View */}
+          <div className="lg:hidden flex flex-col gap-3">
+            {filteredBooks.map((book) => {
+              const isAvailable = book.available_quantity > 0;
+              const issued = book.total_quantity - book.available_quantity;
+              const isUrduBook = book.language === 'Urdu' || isArabicOrUrduScript(book.book_name);
+
+              return (
+                <div 
+                  key={book.id} 
+                  className="rounded-[12px] bg-[#1E1B22] border border-white/[0.08] p-3.5 flex flex-col gap-2.5 shadow-sm hover:border-[#BC881B]/40 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedBookIds.has(book.id)}
+                        onChange={() => toggleSelectBook(book.id)}
+                        className="accent-[var(--gold)] cursor-pointer mt-1"
+                        aria-label={`Select ${book.book_name}`}
+                      />
+                      <div className="min-w-0">
+                        <h4 
+                          onClick={() => onSelectBook(book)}
+                          dir="auto"
+                          style={{ unicodeBidi: 'plaintext' }}
+                          className={`font-semibold text-[#F1F5F9] hover:text-[#E0B450] cursor-pointer truncate ${
+                            isUrduBook ? 'font-urdu text-[15px] leading-relaxed' : 'text-[14px]'
+                          }`}
+                          title={book.book_name}
+                        >
+                          {book.book_name}
+                          {book.title_roman && (
+                            <span className="text-[11px] text-amber-400/90 font-mono ml-1.5 font-normal">
+                              ({book.title_roman})
+                            </span>
+                          )}
+                        </h4>
+                        <p 
+                          dir="auto"
+                          style={{ unicodeBidi: 'plaintext' }}
+                          className="text-[12px] text-slate-400 truncate mt-0.5"
+                        >
+                          {book.author}
+                          {book.author_roman && (
+                            <span className="text-[11px] text-slate-500 font-mono ml-1">· {book.author_roman}</span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                        isAvailable ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950/60 text-rose-300 border border-rose-800/60'
+                      }`}>
+                        {book.available_quantity}/{book.total_quantity} Avail
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Metadata Chips Row */}
+                  <div className="flex items-center gap-2 flex-wrap text-[11px] text-slate-300">
+                    <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
+                      {book.category}
+                    </span>
+                    <span className="font-mono text-[#E0B450] bg-[#BC881B]/15 px-2 py-0.5 rounded border border-[#BC881B]/30">
+                      {book.barcode}
+                    </span>
+                    <span className="font-mono text-slate-400">
+                      {book.dewey_call_number}
+                    </span>
+                    <span className="text-slate-400">
+                      📍 {book.shelf} · Row {book.row}
+                    </span>
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-white/[0.06]">
+                    <span className="text-[11px] font-mono text-slate-400">
+                      Added {formatDisplayDate(book.date_added || book.created_at)}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => onQuickLoan(book)}
+                        disabled={!isAvailable}
+                        className={`px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+                          isAvailable
+                            ? 'bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 border border-amber-500/30'
+                            : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
+                        }`}
+                      >
+                        <ArrowRightLeft className="w-3 h-3" />
+                        <span>Loan</span>
+                      </button>
+                      <button
+                        onClick={() => onEditBook(book)}
+                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+                        title="Edit"
+                        aria-label="Edit title record"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onPrintBarcode(book)}
+                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors cursor-pointer"
+                        title="Print Barcode"
+                        aria-label="Print Barcode"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onDeleteBook(book)}
+                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700 transition-colors cursor-pointer"
+                        title="Delete Book"
+                        aria-label="Delete Book"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
         )}
 
         {/* Bulk Placement & Suggestion Modal */}

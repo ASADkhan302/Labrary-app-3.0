@@ -16,6 +16,7 @@ import {
 import { BookSheetService } from '../../services/bookSheetService';
 import { LibraryFolderService } from '../../services/libraryFolderService';
 import { UsbBackupService } from '../../services/usbBackupService';
+import { LibraryStorage } from '../../services/storage';
 import { ULM_CREST_SRC } from '../../assets/brand/crestData';
 
 interface WelcomeLibraryModalProps {
@@ -241,14 +242,14 @@ export const WelcomeLibraryModal: React.FC<WelcomeLibraryModalProps> = ({
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between shrink-0 bg-[#1A1A1A]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#141214] border border-[#BC881B]/40 flex items-center justify-center shrink-0 p-1 shadow-md">
+            <div className="relative shrink-0 flex items-center justify-center p-0.5 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_8px_rgba(188,136,27,0.25)]">
               <img 
                 src={ULM_CREST_SRC} 
                 alt="University of Lakki Marwat crest" 
-                width={36} 
-                height={36} 
-                className="w-full h-full object-contain"
-                style={{ imageRendering: 'auto' }}
+                width={38} 
+                height={38} 
+                className="w-10 h-10 object-contain drop-shadow-sm select-none" 
+                style={{ imageRendering: '-webkit-optimize-contrast' }} 
               />
             </div>
             <div>
@@ -426,8 +427,29 @@ export const WelcomeLibraryModal: React.FC<WelcomeLibraryModalProps> = ({
               </div>
             </div>
           ) : (
-            /* First Run: [Open library package (.ulmpack)], [Start as a beginner], [Start as a beginner and use my existing Excel sheet] */
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            /* First Run: Central 180px Crest & Options */
+            <div className="space-y-5">
+              <div className="flex flex-col items-center justify-center pt-1 pb-2">
+                <div className="relative shrink-0 flex items-center justify-center p-2 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_24px_rgba(188,136,27,0.3)]">
+                  <img 
+                    src={ULM_CREST_SRC} 
+                    alt="University of Lakki Marwat crest" 
+                    width={160} 
+                    height={160} 
+                    className="w-[160px] h-[160px] object-contain drop-shadow-2xl select-none" 
+                    style={{ imageRendering: '-webkit-optimize-contrast' }} 
+                    title="University of Lakki Marwat Official Crest"
+                  />
+                </div>
+                <p className="text-[13px] font-bold text-white uppercase tracking-wider font-cinzel mt-3">
+                  University of Lakki Marwat
+                </p>
+                <p className="text-[11px] text-[#B3AABD]">
+                  Central Campus Library · System Setup & Onboarding
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Option 1: Open library package (.ulmpack) */}
               <div 
                 onClick={() => packageInputRef.current?.click()}
@@ -504,6 +526,7 @@ export const WelcomeLibraryModal: React.FC<WelcomeLibraryModalProps> = ({
                   <span>Import Sheet</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
+              </div>
               </div>
             </div>
           )}

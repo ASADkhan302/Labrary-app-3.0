@@ -696,6 +696,41 @@ export const BookImportModal: React.FC<BookImportModalProps> = ({
                 )}
               </div>
 
+              {/* Prompt for New Sheet / Add More Data */}
+              <div className="w-full max-w-lg p-5 rounded-xl bg-gradient-to-b from-emerald-950/30 via-[#1C271E]/50 to-emerald-950/20 border border-emerald-500/30 shadow-lg flex flex-col items-center text-center space-y-3">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                  <span>Add More Books From a New Sheet?</span>
+                </div>
+                <p className="text-xs text-[#C5BCCF] max-w-md">
+                  All <strong>{lastBatchResult.count.toLocaleString()}</strong> books have been imported into the catalog. If you have another Excel (.xlsx, .xls) or CSV sheet, you can select and add it right now.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleReset();
+                      setTimeout(() => {
+                        fileInputRef.current?.click();
+                      }, 50);
+                    }}
+                    className="px-5 py-2.5 rounded-[10px] bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <UploadCloud className="w-4 h-4" />
+                    <span>Select &amp; Import New Sheet</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="px-4 py-2.5 rounded-[10px] bg-white/[0.06] hover:bg-white/[0.12] text-[#D8D2DE] hover:text-white text-xs font-semibold uppercase tracking-wider border border-white/10 transition-colors cursor-pointer"
+                  >
+                    <span>Upload Screen</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Secondary Actions & On-demand Batch Labels */}
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
@@ -724,10 +759,11 @@ export const BookImportModal: React.FC<BookImportModalProps> = ({
                       onClose();
                       onOpenLabelBatchPrint(lastBatchResult.bookIds);
                     }}
-                    className="px-5 py-2.5 rounded-[10px] bg-gradient-to-b from-[#BC881B] to-[#9E7216] text-white font-semibold text-xs uppercase tracking-wider shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center gap-2 cursor-pointer"
+                    className="px-4 py-2.5 rounded-[10px] bg-[#BC881B]/20 hover:bg-[#BC881B]/30 text-[#E0B450] font-semibold text-xs uppercase tracking-wider border border-[#BC881B]/40 hover:border-[#BC881B]/60 transition-colors flex items-center gap-2 cursor-pointer"
+                    title="Print labels for this batch now, or use the Batch Labels button in the catalog anytime"
                   >
-                    <Printer className="w-4 h-4" />
-                    <span>Print Labels for {lastBatchResult.count} Books</span>
+                    <Printer className="w-4 h-4 text-[#E0B450]" />
+                    <span>Batch Labels ({lastBatchResult.count} Books)</span>
                   </button>
                 )}
 
@@ -742,9 +778,9 @@ export const BookImportModal: React.FC<BookImportModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2.5 rounded-[10px] bg-white/[0.08] hover:bg-white/[0.12] text-white text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-[10px] bg-white/[0.10] hover:bg-white/[0.18] text-white text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
                 >
-                  Close &amp; Return to Catalog
+                  Done &amp; View Catalog
                 </button>
               </div>
             </div>

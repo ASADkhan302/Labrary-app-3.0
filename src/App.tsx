@@ -39,6 +39,7 @@ import { LibraryDataFilesService, ExternalChangesSummary } from './services/libr
 import { BarcodeService } from './services/barcodeService';
 import { BookSheetService } from './services/bookSheetService';
 import { LibraryFolderService } from './services/libraryFolderService';
+import { ULM_CREST_LOGO_SRC, ULM_CREST_WATERMARK_SRC } from './assets/brand/crestData';
 
 export default function App() {
   // Valid navigation tabs (developer screens removed)
@@ -61,7 +62,7 @@ export default function App() {
   });
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
-      return window.innerWidth < 1100;
+      return window.innerWidth < 1024;
     }
     return false;
   });
@@ -70,9 +71,9 @@ export default function App() {
     let prevWidth = typeof window !== 'undefined' ? window.innerWidth : 1440;
     const handleResize = () => {
       const currentWidth = window.innerWidth;
-      if (prevWidth >= 1100 && currentWidth < 1100) {
+      if (prevWidth >= 1024 && currentWidth < 1024) {
         setIsSidebarCollapsed(true);
-      } else if (prevWidth < 1100 && currentWidth >= 1100) {
+      } else if (prevWidth < 1024 && currentWidth >= 1024) {
         setIsSidebarCollapsed(false);
       }
       prevWidth = currentWidth;
@@ -554,7 +555,16 @@ export default function App() {
         {/* WORKSPACE VIEW (Screen switch: 120ms fade out, 200ms 6px upward slide and fade) */}
         <div className="flex-1 flex flex-col min-h-0 min-w-0 relative overflow-hidden">
           {/* Static ULM Crest Watermark Layer */}
-          <div className="watermark pointer-events-none" aria-hidden="true" />
+          <div className="watermark pointer-events-none select-none z-0 print:hidden" aria-hidden="true">
+            <img
+              src={ULM_CREST_LOGO_SRC}
+              alt="University of Lakki Marwat crest watermark"
+              width={640}
+              height={640}
+              className="w-full h-full object-contain pointer-events-none select-none"
+              style={{ imageRendering: '-webkit-optimize-contrast' }}
+            />
+          </div>
 
           <main 
             key={activeTab}
@@ -803,12 +813,12 @@ export default function App() {
         onClose={() => setIsBookImportOpen(false)}
         onImportComplete={(batchId, count, bookIds) => {
           reloadData();
-          setIsBookImportOpen(false);
           showToast(`Successfully imported ${count} books from entry sheet.`);
           if (bookIds && bookIds.length > 0) {
             setBatchPrintBookIds(bookIds);
-            setIsBatchLabelPrintOpen(true);
           }
+          // Do not close BookImportModal or auto-open BatchLabelPrintModal.
+          // Allows user to review completion and import another new sheet.
         }}
         onOpenLabelBatchPrint={(bookIds) => {
           setBatchPrintBookIds(bookIds);
@@ -820,10 +830,9 @@ export default function App() {
       <BatchLabelPrintModal
         isOpen={isBatchLabelPrintOpen}
         bookIds={batchPrintBookIds.length > 0 ? batchPrintBookIds : undefined}
-        books={batchPrintBookIds.length === 0 ? books.filter(b => b.is_active) : undefined}
+        books={books.filter(b => b.is_active)}
         onClose={() => {
           setIsBatchLabelPrintOpen(false);
-          setBatchPrintBookIds([]);
         }}
       />
 

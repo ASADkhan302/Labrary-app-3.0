@@ -1,7 +1,7 @@
 import React from 'react';
 import { Wifi, Shield, Award, CheckCircle } from 'lucide-react';
 import { Borrower } from '../../types/library';
-import { ULM_CREST_SRC } from '../../assets/brand/crestData';
+import { ULM_CREST_SRC, ULM_CREST_LOGO_SRC, ULM_CREST_WATERMARK_SRC } from '../../assets/brand/crestData';
 
 export interface MemberCardProps {
   member: Partial<Borrower> | null;
@@ -145,23 +145,35 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             }}
           />
 
-          {/* Faint Purple/Gold Corner Glows */}
+          {/* Faint Purple/Gold Corner Glows (z-0 behind watermark) */}
           <div
-            className="absolute top-0 left-0 w-44 h-44 pointer-events-none z-1"
+            className="absolute top-0 left-0 w-44 h-44 pointer-events-none z-0"
             style={{
-              background: 'radial-gradient(circle at top left, rgba(84, 26, 114, 0.40) 0%, transparent 60%)',
+              background: 'radial-gradient(circle at top left, rgba(84, 26, 114, 0.25) 0%, transparent 60%)',
             }}
           />
           <div
-            className="absolute bottom-0 right-0 w-48 h-48 pointer-events-none z-1"
+            className="absolute bottom-0 right-0 w-48 h-48 pointer-events-none z-0"
             style={{
-              background: 'radial-gradient(circle at bottom right, rgba(217, 158, 50, 0.22) 0%, transparent 60%)',
+              background: 'radial-gradient(circle at bottom right, rgba(217, 158, 50, 0.15) 0%, transparent 60%)',
             }}
           />
 
-          {/* Faint Crest Watermark in Middle */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-44 h-44 pointer-events-none opacity-[0.07] z-1 flex items-center justify-center">
-            <img src={ULM_CREST_SRC} alt="" className="w-full h-full object-contain filter grayscale invert" />
+          {/* Authentic ULM Crest Watermark Centered Behind Content (14% institutional opacity) */}
+          <div 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] h-[160px] pointer-events-none select-none z-1 flex items-center justify-center opacity-[0.14]" 
+            aria-hidden="true"
+          >
+            <img 
+              src={ULM_CREST_LOGO_SRC} 
+              alt="University of Lakki Marwat crest watermark" 
+              width={160} 
+              height={160} 
+              className="w-full h-full object-contain pointer-events-none select-none" 
+              style={{ 
+                imageRendering: '-webkit-optimize-contrast' 
+              }}
+            />
           </div>
 
           {/* Small Lanyard-Slot Pill Centered Above Card (simulated punched slot) */}
@@ -174,12 +186,17 @@ export const MemberCard: React.FC<MemberCardProps> = ({
             <>
               {/* HEADER ROW */}
               <div className="relative z-10 flex items-center justify-between pb-1.5 border-b border-[#d99e32]/35">
-                {/* Round Crest Badge & University Titles */}
+                {/* Official Crest (about 9.5mm high) & University Titles */}
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full p-[1.5px] bg-gradient-to-br from-[#f6b84a] to-[#d99e32] shadow-sm shrink-0 flex items-center justify-center">
-                    <div className="w-full h-full rounded-full bg-[#0d101a] flex items-center justify-center overflow-hidden p-0.5">
-                      <img src={ULM_CREST_SRC} alt="ULM Crest" className="w-full h-full object-contain" />
-                    </div>
+                  <div className="relative shrink-0 flex items-center justify-center p-[1px] rounded-full bg-gradient-to-br from-[#d99e32]/30 via-transparent to-[#d99e32]/15 border border-[#d99e32]/50 shadow-[0_0_6px_rgba(217,158,50,0.3)]">
+                    <img 
+                      src={ULM_CREST_SRC} 
+                      alt="University of Lakki Marwat crest" 
+                      width={38} 
+                      height={38} 
+                      className="w-[38px] h-[38px] max-w-[9.5mm] max-h-[9.5mm] object-contain shrink-0 select-none drop-shadow-sm" 
+                      style={{ imageRendering: '-webkit-optimize-contrast' }}
+                    />
                   </div>
 
                   <div>
@@ -354,8 +371,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* BACK HEADER */}
               <div className="relative z-10 flex items-center justify-between pb-1.5 border-b border-[#d99e32]/35">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-[#0d101a] border border-[#d99e32] flex items-center justify-center p-0.5">
-                    <img src={ULM_CREST_SRC} alt="" className="w-full h-full object-contain" />
+                  <div className="relative shrink-0 flex items-center justify-center p-[1px] rounded-full bg-gradient-to-br from-[#d99e32]/30 via-transparent to-[#d99e32]/15 border border-[#d99e32]/50 shadow-[0_0_6px_rgba(217,158,50,0.3)]">
+                    <img 
+                      src={ULM_CREST_SRC} 
+                      alt="University of Lakki Marwat crest" 
+                      width={28} 
+                      height={28} 
+                      className="w-[28px] h-[28px] max-w-[7.5mm] max-h-[7.5mm] object-contain shrink-0 select-none drop-shadow-sm" 
+                      style={{ imageRendering: '-webkit-optimize-contrast' }}
+                    />
                   </div>
                   <div>
                     <h3 className="font-cinzel text-white text-[9px] uppercase font-bold tracking-wider leading-tight">

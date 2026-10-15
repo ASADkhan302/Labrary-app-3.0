@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { X, Printer, Bookmark } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, Printer, Bookmark, FileDown, Loader2, AlertTriangle } from 'lucide-react';
 import { Book } from '../../types/library';
+import { PdfGeneratorService } from '../../services/pdfGeneratorService';
 
 interface BarcodePrintModalProps {
   book: Book | null;
@@ -13,15 +14,15 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
+
   useEffect(() => {
     if (!isOpen) return;
+    setBlockedMessage(null);
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
-      }
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
-        e.preventDefault();
-        window.print();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -30,15 +31,45 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 
   if (!isOpen || !book) return null;
 
-  const handlePrint = () => {
-    window.print();
+  const handleSaveAsPdf = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const res = await PdfGeneratorService.generateLabelsPdf([book], {
+        sizePreset: 'standard',
+        sheetLayout: 'thermal_roll',
+      });
+      PdfGeneratorService.downloadPdf(res.doc, `ULM_Spine_Label_${book.barcode || 'book'}.pdf`);
+    } catch (e: any) {
+      console.error('Failed to export PDF:', e);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
+  const handlePrint = async () => {
+    setIsGeneratingPdf(true);
+    setBlockedMessage(null);
+    try {
+      const res = await PdfGeneratorService.generateLabelsPdf([book], {
+        sizePreset: 'standard',
+        sheetLayout: 'thermal_roll',
+      });
+      const blob = res.doc.output('blob');
+      const printRes = await PdfGeneratorService.printPdfBlob(blob);
+      if (!printRes.success && printRes.blocked) {
+        setBlockedMessage('Printing is blocked in this preview frame. Please click "Save as PDF" to download your label, or open the app in a new browser tab.');
+      }
+    } catch {
+      setBlockedMessage('Printing is blocked here. Use Save as PDF, or open the app in its own tab.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   const renderBarcodeVector = (code: string) => {
-    // Generate barcode line heights and widths (always pure black in light and dark)
     return (
       <div 
-        className="barcode-container flex items-center justify-center gap-[2.5px] h-16 w-full px-4 py-1 bg-white select-none"
+        className="barcode-container flex items-center justify-center gap-[2.5px] h-14 w-full px-4 py-1 bg-white select-none"
         data-barcode-container="true"
       >
         {code.split('').map((char, idx) => {
@@ -58,36 +89,43 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md bg-[#0F172A] border border-slate-200 dark:border-[#1E293B] rounded-xl shadow-xl overflow-hidden flex flex-col"
+        className="w-full max-w-md bg-[#18151D] border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col text-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="px-5 py-3.5 bg-slate-50 dark:bg-[#020617] border-b border-slate-200 dark:border-[#1E293B] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-mono text-amber-600 dark:text-amber-400 font-semibold uppercase tracking-wider">
+        <div className="px-5 py-3.5 bg-[#121014] border-b border-white/[0.08] flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#E0B450] font-semibold uppercase tracking-wider">
             <Printer className="w-4 h-4" />
             <span>BARCODE LABEL THERMAL GENERATOR</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
+            className="p-1 rounded-md text-[#B3AABD] hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Printable Label Preview Area */}
-        <div className="p-6 bg-slate-100 dark:bg-[#020617] flex flex-col items-center justify-center space-y-4">
-          <span className="text-xs font-mono text-slate-500 dark:text-slate-400">Standard 2.5" x 1.5" Adhesive Spine Label:</span>
+        {blockedMessage && (
+          <div className="px-4 py-2 bg-amber-950/40 border-b border-amber-600/30 text-amber-200 text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>{blockedMessage}</span>
+          </div>
+        )}
 
-          {/* Printable Sticker Container (high-contrast thermal sticker) */}
+        {/* Printable Label Preview Area */}
+        <div className="p-6 bg-[#0E0D10] flex flex-col items-center justify-center space-y-3">
+          <span className="text-xs font-mono text-[#B3AABD]">Standard 63.5 × 38.1 mm Adhesive Spine Label:</span>
+
+          {/* Printable Sticker Container */}
           <div 
             id="printable-barcode-label"
-            className="w-80 bg-white text-slate-950 p-4 rounded-lg shadow-sm border-2 border-slate-300 space-y-2 text-center select-none"
+            className="w-72 bg-white text-slate-950 p-4 rounded-lg shadow-md border-2 border-slate-300 space-y-2 text-center select-none"
           >
             {/* Header */}
             <div className="border-b border-slate-300 pb-1.5 flex items-center justify-center gap-1.5">
@@ -103,41 +141,53 @@ export const BarcodePrintModal: React.FC<BarcodePrintModalProps> = ({
                 {book.book_name}
               </p>
               <p className="text-xs text-slate-700 font-mono font-medium mt-0.5">
-                Call: {book.dewey_call_number} · Shelf: {book.shelf}
+                Call: {book.dewey_call_number || '000 ULM'} · Shelf: {book.shelf || 'Main'}
               </p>
             </div>
 
             {/* Barcode vector graphic */}
             <div className="py-1">
               {renderBarcodeVector(book.barcode)}
-              <p className="font-mono text-xs font-bold tracking-[0.25em] text-slate-950 mt-1">
+              <p className="font-mono text-xs font-bold tracking-[0.2em] text-slate-950 mt-1">
                 {book.barcode}
               </p>
             </div>
 
             {/* Footer */}
-            <div className="border-t border-slate-300 pt-1 text-[11px] font-mono font-bold text-slate-700 uppercase tracking-wider">
+            <div className="border-t border-slate-300 pt-1 text-[10px] font-mono font-bold text-slate-700 uppercase tracking-wider">
               CENTRAL CAMPUS LIBRARY • PROPERTY OF ULM
             </div>
           </div>
         </div>
 
         {/* Action Footer */}
-        <div className="px-6 py-4 bg-slate-50 dark:bg-[#020617] border-t border-slate-200 dark:border-[#1E293B] flex items-center justify-between gap-3">
+        <div className="px-5 py-3.5 bg-[#121014] border-t border-white/[0.08] flex items-center justify-between gap-2">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold tracking-wide transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
           >
             Cancel
           </button>
 
-          <button
-            onClick={handlePrint}
-            className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-bold text-xs shadow-md flex items-center gap-2 tracking-wide transition-colors cursor-pointer"
-          >
-            <Printer className="w-4 h-4" />
-            <span>Print Label [Ctrl+P]</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              disabled={isGeneratingPdf}
+              onClick={handleSaveAsPdf}
+              className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#BC881B] to-[#D4A02A] hover:from-[#D4A02A] hover:to-[#E0B450] text-[#1A1A1A] font-bold text-xs shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              {isGeneratingPdf ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
+              <span>Save as PDF</span>
+            </button>
+
+            <button
+              disabled={isGeneratingPdf}
+              onClick={handlePrint}
+              className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs flex items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer"
+            >
+              <Printer className="w-3.5 h-3.5 text-slate-300" />
+              <span>Print</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

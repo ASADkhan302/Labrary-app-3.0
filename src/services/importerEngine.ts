@@ -330,12 +330,31 @@ export class ImporterEngine {
       const row = worksheet.getRow(r);
       const rawTitle = colMap['title'] ? this.cleanCellText(row.getCell(colMap['title']).value) : '';
 
-      // The importer must ignore completely blank rows and rows with no Title.
-      if (!rawTitle || rawTitle.trim() === '') {
+      // Ignore completely blank rows (rows where every mapped cell is empty)
+      const hasAnyData = Object.values(colMap).some(colIdx => {
+        const val = this.cleanCellText(row.getCell(colIdx).value);
+        return Boolean(val && val.trim() !== '');
+      });
+
+      if (!hasAnyData) {
         continue;
       }
 
       totalRowsRead++;
+
+      // Validate required Title field
+      if (!rawTitle || rawTitle.trim() === '') {
+        const rawAcc = colMap['accession'] ? this.cleanCellText(row.getCell(colMap['accession']).value) : '';
+        problems.push({
+          excelRowNumber: r,
+          accessionNo: rawAcc || '(Empty)',
+          type: 'ERROR',
+          field: 'Title',
+          message: 'Missing Book Title (Required field).',
+        });
+        errorsCount++;
+        continue;
+      }
 
       // Progress reporting every 200 rows
       if (r % 200 === 0) {

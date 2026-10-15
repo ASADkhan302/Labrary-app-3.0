@@ -216,6 +216,13 @@ export class RealStorageService {
   }
 
   /**
+   * Returns active SQLite database engine instance
+   */
+  static getActiveSqliteEngine(): SqliteDatabaseService | null {
+    return this.activeSqliteEngine;
+  }
+
+  /**
    * Returns current status with genuine computed facts
    */
   static async getStatus(): Promise<StorageStatus> {
@@ -637,17 +644,6 @@ export class RealStorageService {
     this.isWriting = true;
 
     try {
-      const handle = this.rootDirHandle;
-      if (!handle) {
-        const cfg = this.getSavedConfig();
-        if (cfg.temporaryBrowserStorage) {
-          // Temporary browser storage mode
-          this.isWriting = false;
-          return { success: true, message: 'Saved to temporary browser storage' };
-        }
-        throw new Error('No library folder handle is mounted. Storage is inaccessible.');
-      }
-
       // Ingest latest state into SQLite engine
       if (!this.activeSqliteEngine) {
         this.activeSqliteEngine = new SqliteDatabaseService();
@@ -663,6 +659,36 @@ export class RealStorageService {
       });
 
       const binaryBytes = this.activeSqliteEngine.exportBinary();
+
+      // Electron Desktop File System write
+      const electron = (typeof window !== 'undefined' && (window as any).electronAPI);
+      if (electron?.writeFile) {
+        const loc = LibraryStorage.getStorageLocation();
+        const destPath = `${loc.folderPath}\\Library.ulmlib`;
+        await electron.writeFile(destPath, Array.from(binaryBytes));
+        this.lastWriteSizeBytes = binaryBytes.byteLength;
+        this.lastWriteTimeIso = new Date().toISOString();
+        this.isWriting = false;
+        return {
+          success: true,
+          message: `Committed to ${destPath} (${(binaryBytes.byteLength / 1024).toFixed(1)} KB)`,
+        };
+      }
+
+      const handle = this.rootDirHandle;
+      if (!handle) {
+        const cfg = this.getSavedConfig();
+        if (cfg.temporaryBrowserStorage || isRunningInIframe()) {
+          // Persist binary bytes in IndexedDB for multi-gigabyte durability in browser
+          await storeIdbHandle('ulm_library_sqlite_binary', Array.from(binaryBytes));
+          this.lastWriteSizeBytes = binaryBytes.byteLength;
+          this.lastWriteTimeIso = new Date().toISOString();
+          this.isWriting = false;
+          return { success: true, message: 'Saved to persistent IndexedDB SQLite storage' };
+        }
+        throw new Error('No library folder handle is mounted. Storage is inaccessible.');
+      }
+
       const fileHandle = await handle.getFileHandle('Library.ulmlib', { create: true });
       const writable = await fileHandle.createWritable();
       await writable.write(binaryBytes);

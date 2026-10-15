@@ -26,8 +26,10 @@ import {
   Package,
   ShieldAlert,
   Layers,
-  Library
+  Library,
+  FileCode
 } from 'lucide-react';
+import { CoreSystemDocService } from '../services/coreSystemDocService';
 import { SystemSettings, LinkedSheetInfo } from '../types/library';
 import { LibraryStorage } from '../services/storage';
 import { BarcodeService } from '../services/barcodeService';
@@ -244,10 +246,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     setFormData({ ...settings });
   }, [settings]);
 
+  const [copiedCoreDoc, setCopiedCoreDoc] = useState(false);
+
   const handleCopyPath = () => {
     navigator.clipboard.writeText(currentDbPath);
     setCopiedPath(true);
     setTimeout(() => setCopiedPath(false), 2000);
+  };
+
+  const handleCopyCoreDoc = async () => {
+    const ok = await CoreSystemDocService.copyToClipboard();
+    if (ok) {
+      setCopiedCoreDoc(true);
+      setTimeout(() => setCopiedCoreDoc(false), 2500);
+    }
+  };
+
+  const handleDownloadCoreDoc = () => {
+    CoreSystemDocService.downloadMarkdownFile();
   };
 
   const handleOpenFolder = () => {
@@ -523,7 +539,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div className="flex-1 w-full bg-fluent-matrix px-5 sm:px-8 py-7 overflow-y-auto space-y-6">
+    <div className="flex-1 w-full bg-fluent-matrix px-4 sm:px-6 lg:px-8 py-5 sm:py-6 overflow-y-auto space-y-6">
       <div className="max-w-[1280px] mx-auto space-y-6">
 
         {/* Top Header */}
@@ -661,15 +677,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="bg-gradient-to-b from-[#221F26] to-[#1A1A1A] border border-white/[0.08] rounded-[16px] p-5 sm:p-6 shadow-[0_4px_20px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.06)] relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-[#541A72]" />
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 sm:gap-6">
-            {/* Crest 96px on Round Dark Badge */}
-            <div className="w-24 h-24 rounded-full bg-[#141214] border border-[#BC881B]/40 flex items-center justify-center shrink-0 p-2 shadow-xl">
+            {/* Crest 96px with Refined Institutional Gold Styling */}
+            <div className="relative shrink-0 flex items-center justify-center p-1.5 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_20px_rgba(188,136,27,0.25)]">
               <img
                 src={ULM_CREST_SRC}
                 alt="University of Lakki Marwat crest"
                 width={96}
                 height={96}
-                className="w-full h-full object-contain"
-                style={{ imageRendering: 'auto' }}
+                className="w-24 h-24 object-contain drop-shadow-md select-none"
+                style={{ imageRendering: '-webkit-optimize-contrast' }}
               />
             </div>
 
@@ -692,14 +708,41 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <span>•</span>
                 <span>Copyright © 2026 University of Lakki Marwat</span>
               </div>
-              <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+              <div className="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowButtonAudit(!showButtonAudit)}
-                  className="px-3.5 py-1.5 rounded-[8px] bg-[#BC881B]/20 hover:bg-[#BC881B]/35 border border-[#BC881B]/40 text-[#E0B450] text-xs font-semibold inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                  className="px-3 py-1.5 rounded-[8px] bg-[#BC881B]/20 hover:bg-[#BC881B]/35 border border-[#BC881B]/40 text-[#E0B450] text-xs font-semibold inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
                 >
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>{showButtonAudit ? 'Hide Button & UI System Audit' : '🔍 Open Button & UI System Audit (WCAG AA)'}</span>
+                  <span>{showButtonAudit ? 'Hide UI Audit' : '🔍 UI System Audit'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadCoreDoc}
+                  className="px-3 py-1.5 rounded-[8px] bg-[#541A72]/25 hover:bg-[#541A72]/40 border border-[#A66BC9]/30 text-[#D8B4FE] text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  title="Download docs/ULM_LMS_CORE_SYSTEM.md"
+                >
+                  <FileCode className="w-3.5 h-3.5 text-[#C084FC]" />
+                  <span>Download Core System Spec (.md)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyCoreDoc}
+                  className="px-3 py-1.5 rounded-[8px] bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-[#E0D8E6] text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                  title="Copy full non-UI system specification & LLM prompt to clipboard"
+                >
+                  {copiedCoreDoc ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
+                      <span className="text-emerald-400 font-bold">Prompt Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-[#B3AABD]" />
+                      <span>Copy Core System Prompt</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Minus, Square, X, Copy } from 'lucide-react';
+import { ULM_CREST_SRC } from '../assets/brand/crestData';
 
 interface WindowsTitleBarProps {
   onMinimize?: () => void;
@@ -19,6 +20,22 @@ export const WindowsTitleBar: React.FC<WindowsTitleBarProps> = ({
 }) => {
   const [isMaximized, setIsMaximized] = useState(true);
   const [showNotification, setShowNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check initial native window state if electronAPI is present
+    const electronAPI = (window as unknown as { electronAPI?: { isWindowMaximized?: () => Promise<boolean>; onWindowMaximizeChange?: (cb: (isMax: boolean) => void) => () => void } }).electronAPI;
+    if (electronAPI?.isWindowMaximized) {
+      electronAPI.isWindowMaximized().then((max) => {
+        if (typeof max === 'boolean') setIsMaximized(max);
+      }).catch(() => {});
+    }
+    if (electronAPI?.onWindowMaximizeChange) {
+      const cleanup = electronAPI.onWindowMaximizeChange((max: boolean) => {
+        setIsMaximized(max);
+      });
+      return cleanup;
+    }
+  }, []);
 
   // Native Windows Desktop IPC bridge (WebView2 in C# WPF or Electron)
   const sendNativeWindowCommand = (action: string): boolean => {
@@ -40,9 +57,10 @@ export const WindowsTitleBar: React.FC<WindowsTitleBarProps> = ({
   };
 
   const handleMaximize = () => {
-    setIsMaximized(!isMaximized);
+    const nextState = !isMaximized;
+    setIsMaximized(nextState);
     if (sendNativeWindowCommand('maximize')) return;
-    setShowNotification(!isMaximized ? 'Restored window state.' : 'Maximized window state.');
+    setShowNotification(nextState ? 'Maximized window state.' : 'Restored window state.');
     setTimeout(() => setShowNotification(null), 2000);
   };
 
@@ -60,10 +78,24 @@ export const WindowsTitleBar: React.FC<WindowsTitleBarProps> = ({
         {/* Subtle accent hairline across top */}
         <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--accent)]/40 to-transparent pointer-events-none" />
 
-        {/* Center Section: Window Title with Cinzel font - Larger Text */}
-        <div className="flex-1 text-center truncate max-w-[85%] mx-auto flex items-center justify-center gap-2">
-          <span className="font-cinzel text-[16px] sm:text-[17px] font-bold tracking-wider whitespace-nowrap truncate text-[var(--text-primary)]">
-            {universityName} <span className="text-[var(--text-muted)] font-normal mx-2 font-sans text-[15px]">|</span> {libraryName}
+        {/* Left Section: Real ULM Crest Window Icon */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="relative shrink-0 flex items-center justify-center p-[1px] rounded-full border border-[#BC881B]/40">
+            <img 
+              src={ULM_CREST_SRC} 
+              alt="University of Lakki Marwat crest" 
+              width={18} 
+              height={18} 
+              className="w-[18px] h-[18px] object-contain select-none" 
+            />
+          </div>
+          <span className="text-[11px] font-mono text-[var(--text-muted)] hidden lg:inline">ULM LMS</span>
+        </div>
+
+        {/* Center Section: Window Title with Cinzel font - Fluid Responsive Text */}
+        <div className="flex-1 text-center truncate max-w-[80%] mx-auto flex items-center justify-center gap-2 px-2 min-w-0">
+          <span className="font-cinzel text-[12px] sm:text-[14px] md:text-[16px] font-bold tracking-wider whitespace-nowrap truncate text-[var(--text-primary)]">
+            {universityName} <span className="text-[var(--text-muted)] font-normal mx-1.5 font-sans text-[11px] sm:text-[13px] md:text-[15px]">|</span> {libraryName}
           </span>
         </div>
 

@@ -193,15 +193,15 @@ export const StorageLocationModal: React.FC<StorageLocationModalProps> = ({
       return;
     }
 
-    // Create New Library / Start as a new library:
-    // Creates empty sheet and CSV data files with no books.
-    LibraryStorage.saveBooks([]);
-    LibraryStorage.saveTransactions([]);
+    // Configure Library Storage location while strictly preserving existing books and records
+    const existingBooks = LibraryStorage.getBooks();
     const currSettings = LibraryStorage.getSettings();
-    LibraryStorage.saveSettings({
-      ...currSettings,
-      first_accession_number: firstAccessionNumber || 1,
-    });
+    if (firstAccessionNumber && existingBooks.length === 0) {
+      LibraryStorage.saveSettings({
+        ...currSettings,
+        first_accession_number: firstAccessionNumber,
+      });
+    }
 
     setIsExecuting(true);
     setExecutionError(null);
@@ -280,8 +280,8 @@ export const StorageLocationModal: React.FC<StorageLocationModalProps> = ({
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.01] shrink-0">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-[12px] bg-black/50 border border-amber-500/40 p-1 flex items-center justify-center shrink-0 shadow-md">
-              <img src={ULM_CREST_SRC} alt="ULM Crest" className="w-full h-full object-contain" />
+            <div className="relative shrink-0 flex items-center justify-center p-0.5 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_8px_rgba(188,136,27,0.25)]">
+              <img src={ULM_CREST_SRC} alt="University of Lakki Marwat crest" width={44} height={44} className="w-11 h-11 object-contain drop-shadow-sm select-none" style={{ imageRendering: '-webkit-optimize-contrast' }} />
             </div>
             <div>
               <div className="flex items-center gap-2">

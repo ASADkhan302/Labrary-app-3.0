@@ -89,8 +89,8 @@ export function LmsSidebar({
   const isMobile = windowDimensions.width < 768;
   const isShortScreen = windowDimensions.height < 800;
 
-  // 72px / 4.5rem icon rail when collapsed or below 1100px (slide-in drawer below 768px)
-  const isRail = !isMobile && (isCollapsed || windowDimensions.width < 1100);
+  // 72px / 4.5rem icon rail when collapsed or below 1024px (slide-in drawer below 768px)
+  const isRail = !isMobile && (isCollapsed || windowDimensions.width < 1024);
 
   const isSearchOpen = externalIsSearchOpen !== undefined ? externalIsSearchOpen : internalIsSearchOpen;
   const setIsSearchOpen = (open: boolean) => {
@@ -214,7 +214,7 @@ export function LmsSidebar({
     'Postgraduate Research Unit'
   ];
 
-  // Responsive sidebar width: 232px at >=1440px, 216px from 1200 to 1439px, 72px rail below 1100px or when collapsed
+  // Responsive sidebar width: 232px at >=1440px, 216px from 1024 to 1439px, 72px rail below 1024px or when collapsed
   const getSidebarWidthClass = () => {
     if (isRail) {
       return 'w-[72px] min-w-[72px] max-w-[72px]';
@@ -255,17 +255,15 @@ export function LmsSidebar({
             title={selectedCampus}
           >
             <div className="flex items-center gap-3 overflow-hidden">
-              <div 
-                className="w-[36px] h-[36px] min-w-[36px] min-h-[36px] rounded-full bg-[#141214] border border-[#BC881B]/40 flex items-center justify-center shrink-0 overflow-hidden shadow-sm p-0.5" 
-                title="University of Lakki Marwat Official Crest"
-              >
+              <div className="relative shrink-0 flex items-center justify-center p-0.5 rounded-full bg-gradient-to-br from-[#BC881B]/25 via-transparent to-[#BC881B]/15 border border-[#BC881B]/40 shadow-[0_0_8px_rgba(188,136,27,0.2)]">
                 <img 
                   src={ULM_CREST_SRC} 
                   alt="University of Lakki Marwat crest" 
-                  width={30} 
-                  height={30} 
-                  className="w-[30px] h-[30px] object-contain"
-                  style={{ imageRendering: 'auto' }}
+                  width={34} 
+                  height={34} 
+                  className="w-[34px] h-[34px] min-w-[34px] min-h-[34px] object-contain drop-shadow-sm select-none"
+                  style={{ imageRendering: '-webkit-optimize-contrast' }}
+                  title="University of Lakki Marwat Official Crest"
                 />
               </div>
               {!isRail && (

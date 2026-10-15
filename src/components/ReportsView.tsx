@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { 
   BarChart3, 
   Printer, 
@@ -17,10 +17,13 @@ import {
   AlertCircle,
   TrendingUp,
   Download,
+  FileDown,
   Check,
   X,
   ExternalLink
 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { 
   BarChart, 
   Bar, 
@@ -69,6 +72,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
   const [lastCheckTimestamp, setLastCheckTimestamp] = useState<string>('');
   const [isCheckingHealth, setIsCheckingHealth] = useState(false);
   const [healthResults, setHealthResults] = useState<Record<string, { count: number; items: string[] }> | null>(null);
+  const [isSavingPdf, setIsSavingPdf] = useState(false);
+  const [pdfSavedToast, setPdfSavedToast] = useState(false);
+  const reportPrintRef = useRef<HTMLDivElement>(null);
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
   const lastUpdatedTime = useMemo(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), []);
@@ -368,6 +374,135 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       setLastCheckTimestamp(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       setIsCheckingHealth(false);
     }, 400);
+  };
+
+  // Official PDF Export Handler (A4 Multi-page / Vector Fallback)
+  const handleSaveAsPdf = async () => {
+    if (isSavingPdf) return;
+    setIsSavingPdf(true);
+    try {
+      const elem = reportPrintRef.current;
+      if (!elem) throw new Error('Report element missing');
+
+      const canvas = await html2canvas(elem, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10;
+      const contentWidth = pdfWidth - margin * 2;
+      const contentHeight = (canvas.height * contentWidth) / canvas.width;
+
+      let heightLeft = contentHeight;
+      let position = margin;
+      let page = 1;
+
+      pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight, '', 'FAST');
+      heightLeft -= (pdfHeight - margin * 2);
+
+      while (heightLeft > 0) {
+        position = margin - (page * (pdfHeight - margin * 2));
+        pdf.addPage();
+        page++;
+        pdf.addImage(imgData, 'JPEG', margin, position, contentWidth, contentHeight, '', 'FAST');
+        heightLeft -= (pdfHeight - margin * 2);
+      }
+
+      pdf.save(`ULM_Official_Library_Report_${selectedPeriod}_${todayStr}.pdf`);
+      setPdfSavedToast(true);
+      setTimeout(() => setPdfSavedToast(false), 3500);
+    } catch (err) {
+      console.warn('Canvas PDF export failed, using structured vector PDF:', err);
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(14);
+      pdf.text('UNIVERSITY OF LAKKI MARWAT', 105, 18, { align: 'center' });
+      pdf.setFontSize(10);
+      pdf.text('Central Campus Library · Official Audit & Analytics Report', 105, 25, { align: 'center' });
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.text(`Generated: ${new Date().toLocaleDateString('en-GB')} · Period: ${selectedPeriod.toUpperCase()}`, 105, 30, { align: 'center' });
+      pdf.line(15, 33, 195, 33);
+      pdf.text(`Total Bibliographic Titles: ${counts.totalTitles}`, 20, 42);
+      pdf.text(`Total Physical Copies: ${counts.totalCopies}`, 110, 42);
+      pdf.text(`Volumes on Shelf: ${counts.copiesOnShelf}`, 20, 50);
+      pdf.text(`Volumes on Loan: ${counts.copiesOnLoan}`, 110, 50);
+      pdf.text(`Active Borrowers: ${counts.activeBorrowers}`, 20, 58);
+      pdf.text(`Overdue Loans: ${counts.overdueLoans} (${counts.overdueRatePercent}%)`, 110, 58);
+      pdf.save(`ULM_Official_Library_Report_${selectedPeriod}_${todayStr}.pdf`);
+      setPdfSavedToast(true);
+      setTimeout(() => setPdfSavedToast(false), 3500);
+    } finally {
+      setIsSavingPdf(false);
+    }
+  };
+
+  // Safe Print Handler using isolated print iframe
+  const handlePrintReport = () => {
+    const elem = reportPrintRef.current;
+    if (!elem) {
+      window.print();
+      return;
+    }
+    try {
+      const printFrame = document.createElement('iframe');
+      printFrame.style.position = 'fixed';
+      printFrame.style.top = '-10000px';
+      printFrame.style.left = '-10000px';
+      printFrame.style.width = '210mm';
+      printFrame.style.height = '297mm';
+      printFrame.style.border = 'none';
+      document.body.appendChild(printFrame);
+
+      const frameDoc = printFrame.contentWindow?.document;
+      if (frameDoc) {
+        frameDoc.open();
+        frameDoc.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>University of Lakki Marwat - Official Library Audit Report</title>
+            <style>
+              @page { size: A4 portrait; margin: 12mm; }
+              body { font-family: Georgia, serif; color: #000; background: #fff; margin: 0; padding: 0; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+              th, td { border: 1px solid #777; padding: 6px 8px; font-size: 11px; }
+              th { background-color: #f3f4f6; }
+              h1 { font-size: 18px; text-transform: uppercase; margin: 0 0 4px 0; text-align: center; }
+              h2 { font-size: 13px; text-transform: uppercase; margin: 0 0 4px 0; text-align: center; color: #333; }
+              .text-right { text-align: right; }
+              .text-center { text-align: center; }
+              .font-mono { font-family: monospace; }
+              .font-bold { font-weight: bold; }
+            </style>
+          </head>
+          <body>\${elem.innerHTML}</body>
+          </html>
+        `);
+        frameDoc.close();
+        setTimeout(() => {
+          try {
+            printFrame.contentWindow?.focus();
+            printFrame.contentWindow?.print();
+          } catch {
+            window.print();
+          } finally {
+            setTimeout(() => {
+              if (document.body.contains(printFrame)) document.body.removeChild(printFrame);
+            }, 3000);
+          }
+        }, 350);
+        return;
+      }
+    } catch {
+      window.print();
+    }
   };
 
   // CSV Export Handler using SharedCsvWriter
@@ -1091,12 +1226,29 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
           <div className="w-full max-w-4xl max-h-[90vh] bg-white text-black rounded-[12px] shadow-2xl overflow-y-auto p-8 relative font-serif">
             {/* Action Bar (Hidden in Print) */}
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-300 print:hidden font-sans">
-              <span className="text-sm font-bold text-gray-700">Official Report Print Preview (A4)</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-800">Official Report Print Preview (A4)</span>
+                {pdfSavedToast && (
+                  <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold animate-in fade-in">
+                    ✓ PDF Saved Successfully
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => window.print()}
-                  className="px-4 py-2 bg-black text-white text-xs font-bold rounded cursor-pointer inline-flex items-center gap-1.5"
+                  onClick={handleSaveAsPdf}
+                  disabled={isSavingPdf}
+                  className="px-4 py-2 bg-gradient-to-r from-[#BC881B] to-[#D4A02A] hover:from-[#D4A02A] hover:to-[#E0B450] text-[#1A1A1A] text-xs font-bold rounded cursor-pointer inline-flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-60"
+                  title="Save and download this official report as PDF file"
+                >
+                  <FileDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>{isSavingPdf ? 'Saving PDF...' : 'Save this in PDF'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrintReport}
+                  className="px-4 py-2 bg-black text-white text-xs font-bold rounded cursor-pointer inline-flex items-center gap-1.5 hover:bg-gray-800 transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Send to Printer</span>
@@ -1104,15 +1256,17 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsPrintModalOpen(false)}
-                  className="px-3 py-2 bg-gray-200 text-gray-800 text-xs font-semibold rounded cursor-pointer"
+                  className="px-3 py-2 bg-gray-200 text-gray-800 text-xs font-semibold rounded cursor-pointer hover:bg-gray-300 transition-colors"
                 >
                   Close
                 </button>
               </div>
             </div>
 
-            {/* Official Institutional Header */}
-            <div className="text-center space-y-1 border-b-2 border-black pb-4 mb-6">
+            {/* Printable Content Container */}
+            <div ref={reportPrintRef} className="space-y-6 bg-white text-black">
+              {/* Official Institutional Header */}
+              <div className="text-center space-y-1 border-b-2 border-black pb-4 mb-6">
               <h1 className="text-xl font-bold uppercase tracking-wider font-cinzel">
                 University of Lakki Marwat
               </h1>
@@ -1225,6 +1379,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                 <p className="font-bold">Head of Institution / Vice Chancellor</p>
                 <p className="text-gray-600">Administrative Seal & Approval</p>
               </div>
+            </div>
             </div>
           </div>
         </div>

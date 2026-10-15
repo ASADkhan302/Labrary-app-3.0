@@ -174,9 +174,9 @@ export const AppOpeningSplash: React.FC<AppOpeningSplashProps> = ({ onComplete }
           {/* Start Screen Hero 2D Decorations (Crest draw, flipping page, motes, purple pulse) */}
           <StartScreenHeroDeco />
 
-          {/* a) University crest fades and scales from 0.9 to 1 (600ms) with a soft glow pulse */}
+          {/* a) University crest with refined institutional gold styling & soft glow pulse */}
           <div 
-            className="w-44 h-44 sm:w-48 sm:h-48 rounded-full bg-[#141214] border-2 border-[#BC881B]/50 flex items-center justify-center relative z-10 shadow-2xl p-3"
+            className="w-[140px] h-[140px] flex items-center justify-center relative z-10 p-1.5 rounded-full bg-gradient-to-br from-[#BC881B]/30 via-transparent to-[#BC881B]/15 border border-[#BC881B]/50 shadow-[0_0_28px_rgba(188,136,27,0.35)]"
             style={{
               animation: 'crestEntrance 600ms cubic-bezier(0.16, 1, 0.3, 1) both, crestPulse 2s ease-in-out 600ms infinite alternate',
             }}
@@ -184,10 +184,10 @@ export const AppOpeningSplash: React.FC<AppOpeningSplashProps> = ({ onComplete }
             <img 
               src={ULM_CREST_SRC} 
               alt="University of Lakki Marwat crest" 
-              width={180} 
-              height={180} 
-              className="w-full h-full object-contain"
-              style={{ imageRendering: 'auto' }}
+              width={140} 
+              height={140} 
+              className="w-full h-full object-contain drop-shadow-2xl select-none" 
+              style={{ imageRendering: '-webkit-optimize-contrast' }}
             />
           </div>
         </div>

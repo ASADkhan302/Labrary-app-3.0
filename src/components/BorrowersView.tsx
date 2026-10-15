@@ -18,7 +18,11 @@ import {
   CheckCircle2,
   Clock,
   Briefcase,
-  ArrowRightLeft
+  ArrowRightLeft,
+  FileDown,
+  IdCard,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import { Borrower, Transaction, BorrowerRole, BorrowerStatus } from '../types/library';
 import AddEditBorrowerModal from './modals/AddEditBorrowerModal';
@@ -73,6 +77,8 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
 
   const [detailsBorrower, setDetailsBorrower] = useState<Borrower | null>(null);
   const [cardBorrower, setCardBorrower] = useState<Borrower | null>(null);
+  const [batchCardMembers, setBatchCardMembers] = useState<Borrower[] | null>(null);
+  const [selectedBorrowerIds, setSelectedBorrowerIds] = useState<Set<string>>(new Set());
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
@@ -238,6 +244,44 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
 
   // Table Columns Definition (Part 3.4)
   const tableColumns: ColumnDef<Borrower>[] = [
+    {
+      header: (
+        <div className="flex items-center justify-center">
+          <input
+            type="checkbox"
+            checked={filteredBorrowers.length > 0 && selectedBorrowerIds.size === filteredBorrowers.length}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSelectedBorrowerIds(new Set(filteredBorrowers.map(b => b.id)));
+              } else {
+                setSelectedBorrowerIds(new Set());
+              }
+            }}
+            className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-[#BC881B] focus:ring-0 cursor-pointer"
+            title="Select all members on this page"
+          />
+        </div>
+      ),
+      width: '44px',
+      cell: (b) => (
+        <div className="flex items-center justify-center">
+          <input
+            type="checkbox"
+            checked={selectedBorrowerIds.has(b.id)}
+            onChange={(e) => {
+              e.stopPropagation();
+              setSelectedBorrowerIds(prev => {
+                const next = new Set(prev);
+                if (next.has(b.id)) next.delete(b.id);
+                else next.add(b.id);
+                return next;
+              });
+            }}
+            className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-[#BC881B] focus:ring-0 cursor-pointer"
+          />
+        </div>
+      ),
+    },
     {
       header: 'Member',
       width: '260px',
@@ -525,7 +569,49 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
               Reset Member Filters
             </button>
           </div>
-        ) : viewMode === 'grid' ? (
+        ) : (
+          <>
+            {/* Multi-Selection Batch Cards Export Toolbar */}
+            {selectedBorrowerIds.size > 0 && (
+              <div className="flex flex-wrap items-center justify-between p-3.5 rounded-[12px] bg-gradient-to-r from-[#2B2333] to-[#1E1B24] border border-[#BC881B]/50 shadow-xl text-xs gap-3 animate-in fade-in">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 rounded-full bg-[#E0B450] animate-pulse" />
+                  <span className="font-bold text-white tracking-wide">
+                    {selectedBorrowerIds.size} of {filteredBorrowers.length} members selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedBorrowerIds(new Set())}
+                    className="text-[#B3AABD] hover:text-white underline ml-2 cursor-pointer font-medium"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedBorrowerIds(new Set(filteredBorrowers.map(b => b.id)))}
+                    className="text-[#E0B450] hover:text-white underline ml-1 cursor-pointer font-medium"
+                  >
+                    Select All ({filteredBorrowers.length})
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const selected = borrowers.filter(b => selectedBorrowerIds.has(b.id));
+                      setBatchCardMembers(selected);
+                    }}
+                    className="px-4 py-2 rounded-[8px] bg-gradient-to-r from-[#BC881B] to-[#D4A02A] hover:from-[#D4A02A] hover:to-[#E0B450] text-[#1A1A1A] font-bold text-xs inline-flex items-center gap-1.5 shadow-md cursor-pointer transition-all hover:-translate-y-0.5 active:scale-95"
+                  >
+                    <FileDown className="w-4 h-4" />
+                    <span>Save & Print Member Cards PDF ({selectedBorrowerIds.size})</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {viewMode === 'grid' ? (
           /* 3.3 Member Card (Grid View) - Minimum 300px with staggered animation */
           <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4">
             {filteredBorrowers.map((b, idx) => {
@@ -697,6 +783,8 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
             rowHeightClass="min-h-[52px]"
           />
         )}
+        </>
+      )}
 
       </div>
 
@@ -750,11 +838,15 @@ export const BorrowersView: React.FC<BorrowersViewProps> = ({
         />
       )}
 
-      {cardBorrower && (
+      {(cardBorrower || batchCardMembers) && (
         <MemberCardPrintModal
-          isOpen={Boolean(cardBorrower)}
+          isOpen={Boolean(cardBorrower || batchCardMembers)}
           borrower={cardBorrower}
-          onClose={() => setCardBorrower(null)}
+          members={batchCardMembers || undefined}
+          onClose={() => {
+            setCardBorrower(null);
+            setBatchCardMembers(null);
+          }}
         />
       )}
 

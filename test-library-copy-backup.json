@@ -18,7 +18,7 @@
       "description": "[TEST DATA] Repeated field register test volume 2.",
       "book_image_path": "",
       "dewey_call_number": "004.360",
-      "id": "book-1791445124444-03zsnz",
+      "id": "book-1791940645895-80k0jn",
       "accession_no": "10052",
       "place": "",
       "binding": "HB",
@@ -26,9 +26,9 @@
       "title_sort": "A_[test data] vol 10052: distributed systems (2nd revised edition)",
       "author_sort": "A_prof. andrew s. tanenbaum",
       "search_text": "[test data] vol 10052: distributed systems (2nd revised edition) prof. andrew s. tanenbaum university of lakki marwat academic press computer science & it 10052 978-969-100052-2 004.360",
-      "date_added": "2026-10-08",
-      "created_at": "2026-10-08 07:38:44",
-      "updated_at": "2026-10-08 07:38:44",
+      "date_added": "2026-10-14",
+      "created_at": "2026-10-14 01:17:25",
+      "updated_at": "2026-10-14 01:17:25",
       "is_active": false
     },
     {
@@ -49,7 +49,7 @@
       "description": "[TEST DATA] Repeated field register test volume 1.",
       "book_image_path": "",
       "dewey_call_number": "005.824",
-      "id": "book-1791445124443-bmk542",
+      "id": "book-1791940645894-vjwxon",
       "accession_no": "10051",
       "place": "",
       "binding": "HB",
@@ -57,9 +57,9 @@
       "title_sort": "A_[test data] vol 10051: advanced cryptography",
       "author_sort": "A_prof. dr. tariq mahmud",
       "search_text": "[test data] vol 10051: advanced cryptography prof. dr. tariq mahmud university of lakki marwat academic press computer science & it 10051 978-969-100051-1 005.824",
-      "date_added": "2026-10-08",
-      "created_at": "2026-10-08 07:38:44",
-      "updated_at": "2026-10-08 07:38:44",
+      "date_added": "2026-10-14",
+      "created_at": "2026-10-14 01:17:25",
+      "updated_at": "2026-10-14 01:17:25",
       "is_active": true
     },
     {
@@ -1330,9 +1330,9 @@
       "status": "active",
       "notes": "[TEST DATA] Lifecycle test borrower",
       "student_id": "ULM-FA26-CS-999",
-      "id": "bor-1791445124446-l4selz",
-      "created_at": "2026-10-08 07:38:44",
-      "updated_at": "2026-10-08 07:38:44",
+      "id": "bor-1791940645898-fyxeaz",
+      "created_at": "2026-10-14 01:17:25",
+      "updated_at": "2026-10-14 01:17:25",
       "is_active": true
     },
     {
@@ -1588,20 +1588,20 @@
   ],
   "transactions": [
     {
-      "id": "tx-1791445124447-1pyhf6",
+      "id": "tx-1791940645899-4166xe",
       "book_id": "test-book-10020",
-      "borrower_id": "bor-1791445124446-l4selz",
+      "borrower_id": "bor-1791940645898-fyxeaz",
       "book_name": "[TEST DATA] Volume 10020: Foundations of Pakistan Studies & Law",
       "borrower_name": "[TEST DATA] Candidate Student 999",
       "barcode": "10020",
       "student_id": "ULM-FA26-CS-999",
       "action": "ISSUE",
-      "issue_date": "2026-10-08",
-      "due_date": "2026-10-22",
-      "return_date": "2026-10-08",
+      "issue_date": "2026-10-14",
+      "due_date": "2026-10-28",
+      "return_date": "2026-10-14",
       "quantity": 1,
       "status": "RETURNED",
-      "created_at": "2026-10-08 07:38:44"
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "id": "test-tx-1000",
@@ -1633,7 +1633,7 @@
       "action": "ISSUE",
       "issue_date": "2026-09-01 09:00:00",
       "due_date": "2026-09-15 09:00:00",
-      "return_date": "2026-10-08",
+      "return_date": "2026-10-14",
       "quantity": 1,
       "status": "RETURNED",
       "created_at": "2026-09-01 09:00:00",
@@ -1802,73 +1802,73 @@
       "book_id": "test-book-10002",
       "borrower_id": "test-borrower-102",
       "user": "Circulation-Desk-01",
-      "id": "hist-1791445124448-442",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645900-117",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_RETURNED",
       "description": "Returned copy of \"[TEST DATA] Volume 10020: Foundations of Pakistan Studies & Law\" from [TEST DATA] Candidate Student 999",
       "barcode": "10020",
       "book_id": "test-book-10020",
-      "borrower_id": "bor-1791445124446-l4selz",
+      "borrower_id": "bor-1791940645898-fyxeaz",
       "user": "Circulation-Desk-01",
-      "id": "hist-1791445124448-586",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645899-206",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_ISSUED",
-      "description": "Issued \"[TEST DATA] Volume 10020: Foundations of Pakistan Studies & Law\" to [TEST DATA] Candidate Student 999 (ULM-FA26-CS-999) - Due: 2026-10-22",
+      "description": "Issued \"[TEST DATA] Volume 10020: Foundations of Pakistan Studies & Law\" to [TEST DATA] Candidate Student 999 (ULM-FA26-CS-999) - Due: 2026-10-28",
       "barcode": "10020",
       "book_id": "test-book-10020",
-      "borrower_id": "bor-1791445124446-l4selz",
+      "borrower_id": "bor-1791940645898-fyxeaz",
       "user": "Circulation-Desk-01",
-      "id": "hist-1791445124447-479",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645899-840",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BORROWER_ADDED",
       "description": "Registered Student \"[TEST DATA] Candidate Student 999\" (ULM-FA26-CS-999)",
       "barcode": "ULM-FA26-CS-999",
-      "borrower_id": "bor-1791445124446-l4selz",
+      "borrower_id": "bor-1791940645898-fyxeaz",
       "user": "Desk-Registrar",
-      "id": "hist-1791445124446-822",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645898-804",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_DELETED",
       "description": "Soft-deleted (archived) book \"[TEST DATA] Vol 10052: Distributed Systems (2nd Revised Edition)\" (10052)",
       "barcode": "10052",
-      "book_id": "book-1791445124444-03zsnz",
+      "book_id": "book-1791940645895-80k0jn",
       "user": "Librarian-Admin",
-      "id": "hist-1791445124445-733",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645897-103",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_UPDATED",
       "description": "Updated record for \"[TEST DATA] Vol 10052: Distributed Systems (2nd Revised Edition)\"",
       "barcode": "10052",
-      "book_id": "book-1791445124444-03zsnz",
+      "book_id": "book-1791940645895-80k0jn",
       "user": "Librarian-Admin",
-      "id": "hist-1791445124445-602",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645896-992",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_ADDED",
       "description": "Added \"[TEST DATA] Vol 10052: Distributed Systems\" (Barcode: 10052, Language: English, Copies: 2)",
       "barcode": "10052",
-      "book_id": "book-1791445124444-03zsnz",
+      "book_id": "book-1791940645895-80k0jn",
       "user": "Librarian-Admin",
-      "id": "hist-1791445124444-147",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645896-642",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "action": "BOOK_ADDED",
       "description": "Added \"[TEST DATA] Vol 10051: Advanced Cryptography\" (Barcode: 10051, Language: English, Copies: 2)",
       "barcode": "10051",
-      "book_id": "book-1791445124443-bmk542",
+      "book_id": "book-1791940645894-vjwxon",
       "user": "Librarian-Admin",
-      "id": "hist-1791445124444-445",
-      "created_at": "2026-10-08 07:38:44"
+      "id": "hist-1791940645895-118",
+      "created_at": "2026-10-14 01:17:25"
     },
     {
       "id": "hist-001",

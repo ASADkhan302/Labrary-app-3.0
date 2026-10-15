@@ -14,4 +14,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   acquireLock: (filePath) => ipcRenderer.invoke('fs:acquire-lock', filePath),
   releaseLock: (filePath) => ipcRenderer.invoke('fs:release-lock', filePath),
   getAppDataConfigPath: () => ipcRenderer.invoke('app:get-data-path'),
+  isWindowMaximized: () => ipcRenderer.invoke('window:is-maximized'),
+  onWindowMaximizeChange: (callback) => {
+    const handler = (event, isMax) => callback(isMax);
+    ipcRenderer.on('window-maximize-changed', handler);
+    return () => ipcRenderer.removeListener('window-maximize-changed', handler);
+  },
 });

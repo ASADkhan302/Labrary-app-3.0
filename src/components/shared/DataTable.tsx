@@ -39,8 +39,8 @@ export function DataTable<T>({
 
   return (
     <div className={`w-full overflow-hidden rounded-[14px] border border-[#2E2A33] bg-[#1A1A1A] shadow-md ${className}`}>
-      <div className="w-full overflow-x-auto">
-        <table className="w-full border-collapse text-left text-[13px]">
+      <div className="w-full overflow-x-auto scrollbar-thin">
+        <table className="w-full min-w-[700px] border-collapse text-left text-[13px]">
           {/* Sticky Header on Surface-2 */}
           <thead className="sticky top-0 z-10 bg-[#221F26] border-b border-[#2E2A33]">
             <tr>
